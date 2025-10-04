@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  username         String?   @unique
+  name             String?
+  image            String?
+  hashedPassword   String?
+  emailVerified    DateTime?
+  relationshipStatus RelationshipStatus @default(SINGLE)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Recovery tracking
+  streakStart      DateTime?
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  totalResets      Int       @default(0)
+  
+  // User settings
+  timezone         String    @default("UTC")
+  notificationsEnabled Boolean @default(true)
+  isPublicProfile  Boolean   @default(false)
+
+  // Relations
+  accounts         Account[]
+  sessions         Session[]
+  dailyLogs        DailyLog[]
+  achievements     UserAchievement[]
+  forumPosts       ForumPost[]
+  forumComments    ForumComment[]
+  healthMetrics    HealthMetric[]
+  challengeProgress ChallengeProgress[]
+  streakShares     StreakShare[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model DailyLog {
+  id             String    @id @default(cuid())
+  userId         String
+  date           DateTime  @default(now())
+  moodRating     Int?      // 1-10 scale
+  energyLevel    Int?      // 1-10 scale
+  confidenceLevel Int?     // 1-10 scale
+  urgeIntensity  Int?      // 1-10 scale
+  notes          String?
+  activitiesCompleted String[] // JSON array of completed activities
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("daily_logs")
+}
+
+model Achievement {
+  id          String @id @default(cuid())
+  name        String
+  description String
+  badgeImage  String
+  category    AchievementCategory
+  tier        AchievementTier
+  requirement Int    // Days or count required
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String    @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime  @default(now())
+  progress      Int       @default(0)
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model ForumPost {
+  id               String      @id @default(cuid())
+  userId           String
+  title            String
+  content          String
+  category         ForumCategory
+  isAnonymous      Boolean     @default(true)
+  anonymousUsername String?
+  upvotes          Int         @default(0)
+  downvotes        Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  isModerated      Boolean     @default(false)
+  isPinned         Boolean     @default(false)
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments ForumComment[]
+
+  @@map("forum_posts")
+}
+
+model ForumComment {
+  id               String    @id @default(cuid())
+  postId           String
+  userId           String
+  content          String
+  isAnonymous      Boolean   @default(true)
+  anonymousUsername String?
+  upvotes          Int       @default(0)
+  downvotes        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("forum_comments")
+}
+
+model HealthMetric {
+  id                 String   @id @default(cuid())
+  userId             String
+  date               DateTime @default(now())
+  sleepHours         Float?
+  exerciseMinutes    Int?
+  socialInteractions Int?
+  stepsCount         Int?
+  weight             Float?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("health_metrics")
+}
+
+model Challenge {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  category    ChallengeCategory
+  tier        ChallengeTier
+  points      Int             @default(10)
+  duration    Int             // Duration in days
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  progress ChallengeProgress[]
+
+  @@map("challenges")
+}
+
+model ChallengeProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int       @default(0)
+  isCompleted Boolean   @default(false)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@map("challenge_progress")
+}
+
+model StreakShare {
+  id        String   @id @default(cuid())
+  userId    String
+  streak    Int
+  message   String?
+  imageUrl  String?
+  platform  String   // 'twitter', 'facebook', etc.
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("streak_shares")
+}
+
+// Enums
+enum RelationshipStatus {
+  SINGLE
+  COMMITTED
+  BROKEN_UP
+  MARRIED
+}
+
+enum AchievementCategory {
+  STREAK
+  HEALTH
+  SOCIAL
+  MILESTONE
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  DIAMOND
+  LEGENDARY
+}
+
+enum ForumCategory {
+  GENERAL
+  SUCCESS_STORIES
+  STRUGGLES
+  FITNESS
+  RELATIONSHIPS
+  MENTAL_HEALTH
+}
+
+enum ChallengeCategory {
+  FITNESS
+  SOCIAL
+  MINDFULNESS
+  PRODUCTIVITY
+  RECOVERY
+}
+
+enum ChallengeTier {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  MASTER
+}
