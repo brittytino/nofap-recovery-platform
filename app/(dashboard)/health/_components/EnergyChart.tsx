@@ -2,27 +2,27 @@
 
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-interface ProgressChartProps {
+interface EnergyChartProps {
   userId: string
 }
 
-export function ProgressChart({ userId }: ProgressChartProps) {
-  const [chartData, setChartData] = useState([])
+export function EnergyChart({ userId }: EnergyChartProps) {
+  const [energyData, setEnergyData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetchProgressData()
+    fetchEnergyData()
   }, [userId])
 
-  const fetchProgressData = async () => {
+  const fetchEnergyData = async () => {
     try {
-      const response = await fetch(`/api/analytics/dashboard?userId=${userId}`)
+      const response = await fetch(`/api/health/energy-history?userId=${userId}`)
       const data = await response.json()
-      setChartData(data.chartData.mood)
+      setEnergyData(data)
     } catch (error) {
-      console.error('Failed to fetch progress data:', error)
+      console.error('Failed to fetch energy data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -32,7 +32,7 @@ export function ProgressChart({ userId }: ProgressChartProps) {
     return (
       <Card className="p-6">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-48 bg-gray-200 rounded"></div>
         </div>
       </Card>
@@ -41,22 +41,22 @@ export function ProgressChart({ userId }: ProgressChartProps) {
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Mood Progress (30 Days)</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Energy Levels</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <AreaChart data={energyData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <YAxis domain={[0, 10]} />
             <Tooltip />
-            <Line 
+            <Area 
               type="monotone" 
-              dataKey="mood" 
-              stroke="#22c55e" 
+              dataKey="energy" 
+              stroke="#eab308" 
+              fill="#fef3c7" 
               strokeWidth={2}
-              dot={{ fill: '#22c55e', strokeWidth: 2 }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </Card>
