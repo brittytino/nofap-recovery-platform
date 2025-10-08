@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { SOSButton } from './_components/SOSButton'
 import { CopingStrategies } from './_components/CopingStrategies'
@@ -7,7 +7,7 @@ import { EmergencyContacts } from './_components/EmergencyContacts'
 import { UrgeLogger } from './_components/UrgeLogger'
 
 export default async function CrisisPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">
@@ -20,7 +20,7 @@ export default async function CrisisPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <SOSButton />
-        <UrgeLogger userId={session!.user.id} />
+        <UrgeLogger userId={session?.user?.id ?? ''} />
       </div>
 
       <BreathingExercise />

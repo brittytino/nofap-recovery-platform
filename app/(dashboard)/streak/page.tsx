@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { StreakHistory } from './_components/StreakHistory'
 import { MilestoneAchievements } from './_components/MilestoneAchievements'
@@ -7,7 +7,7 @@ import { StreakInsights } from './_components/StreakInsights'
 import { StreakResetModal } from './_components/StreakResetModal'
 
 export default async function StreakPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">
@@ -17,18 +17,18 @@ export default async function StreakPage() {
           <p className="text-gray-600">Monitor your progress and celebrate milestones</p>
         </div>
         <div className="flex items-center space-x-3">
-          <ShareStreak userId={session!.user.id} />
-          <StreakResetModal userId={session!.user.id} />
+          <ShareStreak userId={session?.user?.id ?? ''} />
+          <StreakResetModal userId={session?.user?.id ?? ''} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <StreakHistory userId={session!.user.id} />
+          <StreakHistory userId={session?.user?.id ?? ''} />
         </div>
         <div className="space-y-6">
-          <StreakInsights userId={session!.user.id} />
-          <MilestoneAchievements userId={session!.user.id} />
+          <StreakInsights userId={session?.user?.id ?? ''} />
+          <MilestoneAchievements userId={session?.user?.id ?? ''} />
         </div>
       </div>
     </div>

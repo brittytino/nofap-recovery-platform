@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { ThumbsUp, ThumbsDown, MessageCircle, Clock, Pin } from 'lucide-react'
+import { ThumbsUp, MessageCircle, Clock, Pin } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface Post {
@@ -14,13 +14,14 @@ interface Post {
   title: string
   content: string
   category: string
-  upvotes: number
-  downvotes: number
+  upvoteCount: number
+  commentCount: number
+  viewCount: number
   isAnonymous: boolean
   anonymousUsername: string
   createdAt: Date
   isPinned: boolean
-  _count: {
+  _count?: {
     comments: number
   }
 }
@@ -30,43 +31,25 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const [votes, setVotes] = useState({
-    upvotes: post.upvotes,
-    downvotes: post.downvotes
-  })
-  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null)
+  const [upvotes, setUpvotes] = useState(post.upvoteCount)
+  const [hasVoted, setHasVoted] = useState(false)
 
-  const handleVote = async (type: 'up' | 'down') => {
+  const handleVote = async () => {
     try {
       const response = await fetch(`/api/forum/posts/${post.id}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type })
       })
 
       if (response.ok) {
-        if (userVote === type) {
+        if (hasVoted) {
           // Remove vote
-          setVotes(prev => ({
-            ...prev,
-            [type === 'up' ? 'upvotes' : 'downvotes']: prev[type === 'up' ? 'upvotes' : 'downvotes'] - 1
-          }))
-          setUserVote(null)
+          setUpvotes(prev => prev - 1)
+          setHasVoted(false)
         } else {
-          // Change or add vote
-          if (userVote) {
-            setVotes(prev => ({
-              ...prev,
-              [userVote === 'up' ? 'upvotes' : 'downvotes']: prev[userVote === 'up' ? 'upvotes' : 'downvotes'] - 1,
-              [type === 'up' ? 'upvotes' : 'downvotes']: prev[type === 'up' ? 'upvotes' : 'downvotes'] + 1
-            }))
-          } else {
-            setVotes(prev => ({
-              ...prev,
-              [type === 'up' ? 'upvotes' : 'downvotes']: prev[type === 'up' ? 'upvotes' : 'downvotes'] + 1
-            }))
-          }
-          setUserVote(type)
+          // Add vote
+          setUpvotes(prev => prev + 1)
+          setHasVoted(true)
         }
       }
     } catch (error) {
@@ -130,31 +113,20 @@ export function PostCard({ post }: PostCardProps) {
             </div>
 
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                <Button
-                  size="sm"
-                  variant={userVote === 'up' ? 'default' : 'ghost'}
-                  onClick={() => handleVote('up')}
-                  className="h-8 px-2"
-                >
-                  <ThumbsUp className="h-4 w-4" />
-                  <span className="ml-1">{votes.upvotes}</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant={userVote === 'down' ? 'destructive' : 'ghost'}
-                  onClick={() => handleVote('down')}
-                  className="h-8 px-2"
-                >
-                  <ThumbsDown className="h-4 w-4" />
-                  <span className="ml-1">{votes.downvotes}</span>
-                </Button>
-              </div>
+              <Button
+                size="sm"
+                variant={hasVoted ? 'default' : 'ghost'}
+                onClick={handleVote}
+                className="h-8 px-2"
+              >
+                <ThumbsUp className="h-4 w-4" />
+                <span className="ml-1">{upvotes}</span>
+              </Button>
 
               <Link href={`/forum/post/${post.id}`}>
                 <Button size="sm" variant="ghost" className="h-8 px-2">
                   <MessageCircle className="h-4 w-4" />
-                  <span className="ml-1">{post._count.comments}</span>
+                  <span className="ml-1">{post._count?.comments || post.commentCount}</span>
                 </Button>
               </Link>
             </div>

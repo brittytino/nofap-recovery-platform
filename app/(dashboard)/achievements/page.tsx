@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { BadgeCollection } from './_components/BadgeCollection'
 import { XPProgress } from './_components/XPProgress'
@@ -6,7 +6,7 @@ import { Leaderboard } from './_components/Leaderboard'
 import { AchievementStats } from './_components/AchievementStats'
 
 export default async function AchievementsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">
@@ -19,15 +19,15 @@ export default async function AchievementsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <BadgeCollection userId={session!.user.id} />
+          <BadgeCollection userId={session?.user?.id ?? ''} />
         </div>
         <div className="space-y-6">
-          <XPProgress userId={session!.user.id} />
-          <AchievementStats userId={session!.user.id} />
+          <XPProgress userId={session?.user?.id ?? ''} />
+          <AchievementStats userId={session?.user?.id ?? ''} />
         </div>
       </div>
 
-      <Leaderboard userId={session!.user.id} />
+      <Leaderboard userId={session?.user?.id ?? ''} />
     </div>
   )
 }

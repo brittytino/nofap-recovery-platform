@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { X, Heart, Star, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -83,37 +83,38 @@ export function DailyMotivation({ relationshipStatus }: DailyMotivationProps) {
     <>
       <AnimatePresence>
         {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          >
-            <Card className="max-w-md w-full p-6 text-center relative">
-              <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-              
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-recovery-400 to-recovery-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="text-white" size={28} />
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+            >
+              <Card className="max-w-md w-full p-6 text-center relative">
+                <button
+                  onClick={handleClose}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+                
+                <div className="mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-recovery-400 to-recovery-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Star className="text-white" size={28} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Daily Motivation
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {currentMotivation}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Daily Motivation
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {currentMotivation}
-                </p>
-              </div>
-              
-              <Button onClick={handleClose} className="btn-primary w-full">
-                Let's Go! 🚀
-              </Button>
-            </Card>
-          </motion.div>
+                
+                <Button onClick={handleClose} className="btn-primary w-full">
+                  Let's Go! 🚀
+                </Button>
+              </Card>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

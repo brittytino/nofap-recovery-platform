@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { subWeeks, subMonths, startOfWeek, startOfMonth } from 'date-fns'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
@@ -31,9 +31,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Get XP data for the timeframe
-    const xpQuery = timeframe === 'allTime' ? {} : { date: dateFilter }
+    const xpQuery = timeframe === 'allTime' ? {} : { createdAt: dateFilter }
     
-    const userXPData = await db.userXP.groupBy({
+    const userXPData = await db.userXPLog.groupBy({
       by: ['userId'],
       where: xpQuery,
       _sum: { pointsEarned: true },
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
         id: true,
         name: true,
         currentStreak: true,
-        level: true
+        currentLevel: true
       }
     })
 
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
         username: user ? generateAnonymousUsername(user.name, user.id) : 'Anonymous User',
         totalXP: item._sum.pointsEarned || 0,
         currentStreak: user?.currentStreak || 0,
-        level: user?.level || 1,
+        level: user?.currentLevel || 1,
         rank: index + 1,
         isCurrentUser: item.userId === userId
       }
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
           username: user ? generateAnonymousUsername(user.name, userId) : 'You',
           totalXP: userXPData[userIndex]._sum.pointsEarned || 0,
           currentStreak: user?.currentStreak || 0,
-          level: user?.level || 1,
+          level: user?.currentLevel || 1,
           rank: userIndex + 1,
           isCurrentUser: true
         }
@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function generateAnonymousUsername(name: string, userId: string): string {
+function generateAnonymousUsername(name: string | null, userId: string): string {
   const adjectives = ['Strong', 'Brave', 'Determined', 'Focused', 'Resilient']
   const nouns = ['Warrior', 'Champion', 'Hero', 'Phoenix', 'Eagle']
   

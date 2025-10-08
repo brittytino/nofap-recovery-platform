@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
-import { z } from 'zod'
 import { db } from '@/lib/db'
-
-const registerSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
-  relationshipStatus: z.enum(['SINGLE', 'COMMITTED', 'BROKEN_UP', 'MARRIED']),
-})
+import bcrypt from 'bcryptjs'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { name, email, password, relationshipStatus } = registerSchema.parse(body)
+    const { name, email, password } = await req.json()
+
+    // Validation
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { message: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json(
+        { message: 'Password must be at least 8 characters' },
+        { status: 400 }
+      )
+    }
 
     // Check if user already exists
     const existingUser = await db.user.findUnique({
@@ -30,36 +36,38 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
+    // Generate anonymous username
+    const adjectives = ['Brave', 'Strong', 'Determined', 'Focused', 'Resilient', 'Mindful']
+    const nouns = ['Warrior', 'Champion', 'Hero', 'Phoenix', 'Eagle', 'Lion']
+    const randomNum = Math.floor(Math.random() * 1000)
+    const anonymousUsername = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${randomNum}`
+
     // Create user
     const user = await db.user.create({
       data: {
         name,
         email,
-        hashedPassword,
-        relationshipStatus,
-        streakStart: new Date(),
-      }
+        password: hashedPassword,
+        anonymousUsername,
+      },
     })
 
-    // Remove password from response
-    const { hashedPassword: _, ...userWithoutPassword } = user
-
     return NextResponse.json(
-      { message: 'User created successfully', user: userWithoutPassword },
+      {
+        success: true,
+        message: 'Account created successfully',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
+      },
       { status: 201 }
     )
   } catch (error) {
     console.error('Registration error:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { message: 'Invalid input data', errors: error.errors },
-        { status: 400 }
-      )
-    }
-
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'An error occurred during registration' },
       { status: 500 }
     )
   }

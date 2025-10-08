@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Select } from '@/components/ui/Select'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { toast } from 'react-hot-toast'
 import { Eye, EyeOff } from 'lucide-react'
 
@@ -139,13 +138,17 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <Select {...register('relationshipStatus')} className="w-full" disabled={isLoading}>
+        <select 
+          {...register('relationshipStatus')} 
+          className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={isLoading}
+        >
           <option value="">Select relationship status</option>
           <option value="SINGLE">Single</option>
           <option value="COMMITTED">In a relationship</option>
           <option value="BROKEN_UP">Recently ended relationship</option>
           <option value="MARRIED">Married</option>
-        </Select>
+        </select>
         {errors.relationshipStatus && (
           <p className="text-red-500 text-sm mt-1">{errors.relationshipStatus.message}</p>
         )}

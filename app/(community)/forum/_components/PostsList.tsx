@@ -13,13 +13,14 @@ interface Post {
   title: string
   content: string
   category: string
-  upvotes: number
-  downvotes: number
+  upvoteCount: number
+  commentCount: number
+  viewCount: number
   isAnonymous: boolean
   anonymousUsername: string
   createdAt: Date
   isPinned: boolean
-  _count: { comments: number }
+  _count?: { comments: number }
 }
 
 export function PostsList() {

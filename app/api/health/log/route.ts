@@ -1,118 +1,140 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { z } from 'zod'
-import { authOptions } from '@/lib/auth'
+import { getServerSession } from '@/lib/auth'
 import { db } from '@/lib/db'
-
-const healthLogSchema = z.object({
-  moodRating: z.number().min(1).max(10).optional(),
-  energyLevel: z.number().min(1).max(10).optional(),
-  confidenceLevel: z.number().min(1).max(10).optional(),
-  sleepHours: z.number().min(0).max(24).optional(),
-  exerciseMinutes: z.number().min(0).optional(),
-  urgeIntensity: z.number().min(1).max(10).optional(),
-  notes: z.string().optional(),
-  date: z.string().datetime(),
-})
+import { startOfDay } from 'date-fns'
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
-    if (!session) {
+    if (!session?.user?.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
-    const validatedData = healthLogSchema.parse(body)
+    const data = await req.json()
+    const today = startOfDay(new Date())
 
-    const logDate = new Date(validatedData.date)
-    logDate.setHours(0, 0, 0, 0)
-
-    // Update or create daily log
-    const dailyLog = await db.dailyLog.upsert({
+    // Check if health metric already exists for today
+    const existingMetric = await db.healthMetric.findUnique({
       where: {
         userId_date: {
           userId: session.user.id,
-          date: logDate,
+          date: today
         }
-      },
-      update: {
-        moodRating: validatedData.moodRating,
-        energyLevel: validatedData.energyLevel,
-        confidenceLevel: validatedData.confidenceLevel,
-        urgeIntensity: validatedData.urgeIntensity,
-        notes: validatedData.notes,
-      },
-      create: {
-        userId: session.user.id,
-        date: logDate,
-        moodRating: validatedData.moodRating,
-        energyLevel: validatedData.energyLevel,
-        confidenceLevel: validatedData.confidenceLevel,
-        urgeIntensity: validatedData.urgeIntensity,
-        notes: validatedData.notes,
       }
     })
 
-    // Update or create health metrics
-    if (validatedData.sleepHours || validatedData.exerciseMinutes) {
-      await db.healthMetric.upsert({
-        where: {
-          userId_date: {
-            userId: session.user.id,
-            date: logDate,
-          }
-        },
-        update: {
-          sleepHours: validatedData.sleepHours,
-          exerciseMinutes: validatedData.exerciseMinutes,
-        },
-        create: {
-          userId: session.user.id,
-          date: logDate,
-          sleepHours: validatedData.sleepHours,
-          exerciseMinutes: validatedData.exerciseMinutes,
+    let healthMetric
+    let xpEarned = 0
+
+    if (existingMetric) {
+      // Update existing metric
+      healthMetric = await db.healthMetric.update({
+        where: { id: existingMetric.id },
+        data: {
+          sleepHours: data.sleepHours ?? existingMetric.sleepHours,
+          sleepQuality: data.sleepQuality ?? existingMetric.sleepQuality,
+          exerciseMinutes: data.exerciseMinutes ?? existingMetric.exerciseMinutes,
+          exerciseType: data.exerciseType ?? existingMetric.exerciseType,
+          steps: data.steps ?? existingMetric.steps,
+          waterIntake: data.waterIntake ?? existingMetric.waterIntake,
+          weight: data.weight ?? existingMetric.weight,
+          socialInteraction: data.socialInteraction ?? existingMetric.socialInteraction,
+          meditationMinutes: data.meditationMinutes ?? existingMetric.meditationMinutes,
+          updatedAt: new Date()
         }
       })
+    } else {
+      // Create new metric
+      healthMetric = await db.healthMetric.create({
+        data: {
+          userId: session.user.id,
+          date: today,
+          sleepHours: data.sleepHours,
+          sleepQuality: data.sleepQuality,
+          exerciseMinutes: data.exerciseMinutes,
+          exerciseType: data.exerciseType,
+          steps: data.steps,
+          waterIntake: data.waterIntake,
+          weight: data.weight,
+          socialInteraction: data.socialInteraction,
+          meditationMinutes: data.meditationMinutes
+        }
+      })
+
+      // Calculate XP based on activities
+      if (data.exerciseMinutes && data.exerciseMinutes >= 30) xpEarned += 15
+      if (data.meditationMinutes && data.meditationMinutes >= 10) xpEarned += 10
+      if (data.steps && data.steps >= 10000) xpEarned += 10
+      if (data.socialInteraction && data.socialInteraction >= 7) xpEarned += 10
+      if (data.waterIntake && data.waterIntake >= 2) xpEarned += 5
+
+      if (xpEarned > 0) {
+        await db.userXPLog.create({
+          data: {
+            userId: session.user.id,
+            activityType: 'EXERCISE',
+            pointsEarned: xpEarned,
+            description: 'Logged health activities'
+          }
+        })
+
+        await db.user.update({
+          where: { id: session.user.id },
+          data: {
+            totalXP: { increment: xpEarned }
+          }
+        })
+      }
     }
 
-    // Award XP for logging
-    await awardXP(session.user.id, 'HEALTH_LOG', 10)
-
-    return NextResponse.json({ success: true, dailyLog })
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Health metrics saved successfully',
+      healthMetric,
+      xpEarned
+    })
   } catch (error) {
-    console.error('Health logging error:', error)
+    console.error('Health tracking error:', error)
     return NextResponse.json(
-      { message: 'Failed to log health data' },
+      { message: 'Failed to save health metrics' },
       { status: 500 }
     )
   }
 }
 
-async function awardXP(userId: string, activityType: string, points: number) {
-  // Check if XP already awarded today for this activity
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const existingXP = await db.userXP.findFirst({
-    where: {
-      userId,
-      activityType,
-      date: {
-        gte: today,
-      }
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
-  })
 
-  if (!existingXP) {
-    await db.userXP.create({
-      data: {
-        userId,
-        activityType,
-        pointsEarned: points,
-        date: new Date(),
+    const { searchParams } = new URL(req.url)
+    const days = parseInt(searchParams.get('days') || '30')
+
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
+
+    const metrics = await db.healthMetric.findMany({
+      where: {
+        userId: session.user.id,
+        date: {
+          gte: startDate
+        }
+      },
+      orderBy: {
+        date: 'desc'
       }
     })
+
+    return NextResponse.json({ metrics })
+  } catch (error) {
+    console.error('Health metrics fetch error:', error)
+    return NextResponse.json(
+      { message: 'Failed to fetch health metrics' },
+      { status: 500 }
+    )
   }
 }

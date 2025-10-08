@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { NotificationSettings } from './_components/NotificationSettings'
 import { PrivacySettings } from './_components/PrivacySettings'
@@ -6,7 +6,7 @@ import { AccountSettings } from './_components/AccountSettings'
 import { DataExport } from './_components/DataExport'
 
 export default async function SettingsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">
@@ -17,12 +17,12 @@ export default async function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          <AccountSettings userId={session!.user.id} />
-          <NotificationSettings userId={session!.user.id} />
+          <AccountSettings userId={session?.user?.id ?? ''} />
+          <NotificationSettings userId={session?.user?.id ?? ''} />
         </div>
         <div className="space-y-6">
-          <PrivacySettings userId={session!.user.id} />
-          <DataExport userId={session!.user.id} />
+          <PrivacySettings userId={session?.user?.id ?? ''} />
+          <DataExport userId={session?.user?.id ?? ''} />
         </div>
       </div>
     </div>

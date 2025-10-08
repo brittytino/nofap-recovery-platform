@@ -6,12 +6,14 @@ import { WelcomeSteps } from './_components/WelcomeSteps'
 import { InitialAssessment } from './_components/InitialAssessment'
 import { GoalSetting } from './_components/GoalSetting'
 import { RelationshipStatusSelector } from './_components/RelationshipStatusSelector'
+import { NotificationPreferences } from './_components/NotificationPreferences'
 
 const STEPS = [
   { id: 'welcome', title: 'Welcome', component: WelcomeSteps },
   { id: 'assessment', title: 'Assessment', component: InitialAssessment },
   { id: 'goals', title: 'Goals', component: GoalSetting },
   { id: 'relationship', title: 'Relationship', component: RelationshipStatusSelector },
+  { id: 'notifications', title: 'Notifications', component: NotificationPreferences },
 ]
 
 export default function OnboardingPage() {

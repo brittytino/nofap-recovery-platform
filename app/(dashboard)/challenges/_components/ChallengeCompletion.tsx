@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Trophy, Star, Share2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import confetti from 'canvas-confetti'
+// import confetti from 'canvas-confetti' // Optional dependency
 
 interface ChallengeCompletionProps {
   isOpen: boolean
@@ -41,11 +41,11 @@ export function ChallengeCompletion({ isOpen, onOpenChange, challenge }: Challen
 
       if (response.ok) {
         // Trigger confetti animation
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        })
+        // confetti({
+        //   particleCount: 100,
+        //   spread: 70,
+        //   origin: { y: 0.6 }
+        // })
 
         toast.success(`Congratulations! +${challenge.points} XP earned!`)
         setReflection('')

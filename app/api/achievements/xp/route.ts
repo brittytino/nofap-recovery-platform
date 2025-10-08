@@ -1,23 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId') || session.user.id
+    const userId = searchParams.get('userId') || session.user?.id
 
     // Get all XP records for user
-    const xpRecords = await db.userXP.findMany({
+    const xpRecords = await db.userXPLog.findMany({
       where: { userId },
-      orderBy: { date: 'desc' }
+      orderBy: { createdAt: 'desc' }
     })
 
     // Calculate total XP

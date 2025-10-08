@@ -79,7 +79,7 @@ export function BreathingExercise() {
 
         <div className="mb-8">
           <motion.div
-            className="w-32 h-32 mx-auto rounded-full border-4 border-gray-300 flex items-center justify-center mb-6"
+            
             animate={{
               scale: phase === 'inhale' ? 1.2 : phase === 'exhale' ? 0.8 : 1,
               borderColor: phase === 'inhale' ? '#3b82f6' : phase === 'exhale' ? '#10b981' : '#eab308'

@@ -22,12 +22,13 @@ export function SOSButton() {
   if (isActivated) {
     return (
       <Card className="p-8 text-center bg-red-50 border-red-200">
-        <motion.div
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-          className="space-y-6"
-        >
-          <AlertTriangle className="h-16 w-16 text-red-500 mx-auto" />
+        <div className="space-y-6">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+          >
+            <AlertTriangle className="h-16 w-16 text-red-500 mx-auto" />
+          </motion.div>
           <h2 className="text-2xl font-bold text-red-800">Help is Here</h2>
           <p className="text-red-700">
             Take a deep breath. You've taken the right step by reaching out.
@@ -48,7 +49,7 @@ export function SOSButton() {
           <p className="text-sm text-red-600">
             If you're in immediate danger, call emergency services: 911
           </p>
-        </motion.div>
+        </div>
       </Card>
     )
   }

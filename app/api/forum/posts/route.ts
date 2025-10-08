@@ -1,82 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { z } from 'zod'
-import { authOptions } from '@/lib/auth'
+import { getServerSession } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { generateAnonymousUsername } from '@/lib/utils'
 
-const createPostSchema = z.object({
-  title: z.string().min(5).max(200),
-  content: z.string().min(10).max(5000),
-  category: z.enum(['GENERAL', 'SUCCESS_STORIES', 'STRUGGLES', 'FITNESS', 'RELATIONSHIPS', 'MENTAL_HEALTH']),
-  isAnonymous: z.boolean().default(true),
-})
-
-const postsQuerySchema = z.object({
-  category: z.string().optional(),
-  page: z.string().optional(),
-  limit: z.string().optional(),
-})
-
-export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
-    }
-
-    const body = await req.json()
-    const { title, content, category, isAnonymous } = createPostSchema.parse(body)
-
-    const post = await db.forumPost.create({
-      data: {
-        userId: session.user.id,
-        title,
-        content,
-        category,
-        isAnonymous,
-        anonymousUsername: isAnonymous ? generateAnonymousUsername() : null,
-      },
-      include: {
-        _count: {
-          select: { comments: true }
-        }
-      }
-    })
-
-    // Award XP for creating post
-    await awardXP(session.user.id, 'FORUM_POST', 25)
-
-    return NextResponse.json({ success: true, post }, { status: 201 })
-  } catch (error) {
-    console.error('Post creation error:', error)
-    return NextResponse.json(
-      { message: 'Failed to create post' },
-      { status: 500 }
-    )
-  }
+// Generate anonymous username
+function generateAnonymousUsername(): string {
+  const adjectives = ['Brave', 'Strong', 'Determined', 'Resilient', 'Focused', 'Mindful', 'Courageous', 'Steadfast', 'Bold', 'Valiant']
+  const nouns = ['Warrior', 'Champion', 'Phoenix', 'Eagle', 'Lion', 'Tiger', 'Guardian', 'Seeker', 'Voyager', 'Explorer']
+  const number = Math.floor(Math.random() * 1000)
+  
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
+  const noun = nouns[Math.floor(Math.random() * nouns.length)]
+  
+  return `${adjective}${noun}${number}`
 }
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const { category, page = '1', limit = '10' } = postsQuerySchema.parse(
-      Object.fromEntries(searchParams)
-    )
+    const category = searchParams.get('category')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const skip = (page - 1) * limit
 
-    const pageNum = parseInt(page)
-    const limitNum = parseInt(limit)
-    const skip = (pageNum - 1) * limitNum
+    const where = category && category !== 'ALL' ? { category: category as any } : {}
 
-    const where = category ? { category: category as any } : {}
-
-    const [posts, totalCount] = await Promise.all([
+    const [posts, total] = await Promise.all([
       db.forumPost.findMany({
         where,
         include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              currentLevel: true
+            }
+          },
           _count: {
-            select: { comments: true }
+            select: {
+              comments: true,
+              votes: true
+            }
           }
         },
         orderBy: [
@@ -84,39 +48,108 @@ export async function GET(req: NextRequest) {
           { createdAt: 'desc' }
         ],
         skip,
-        take: limitNum,
+        take: limit
       }),
       db.forumPost.count({ where })
     ])
 
-    const totalPages = Math.ceil(totalCount / limitNum)
+    // Map posts to hide real usernames if anonymous
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      user: post.isAnonymous ? {
+        id: post.user.id,
+        name: post.anonymousUsername || 'Anonymous',
+        image: null,
+        level: post.user.currentLevel
+      } : post.user
+    }))
 
-    return NextResponse.json({
-      posts,
+    return NextResponse.json({ 
+      posts: formattedPosts,
       pagination: {
-        currentPage: pageNum,
-        totalPages,
-        totalCount,
-        hasNext: pageNum < totalPages,
-        hasPrev: pageNum > 1,
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
       }
     })
   } catch (error) {
-    console.error('Posts fetch error:', error)
+    console.error('Forum posts fetch error:', error)
     return NextResponse.json(
-      { message: 'Failed to fetch posts' },
+      { message: 'Failed to fetch forum posts' },
       { status: 500 }
     )
   }
 }
 
-async function awardXP(userId: string, activityType: string, points: number) {
-  await db.userXP.create({
-    data: {
-      userId,
-      activityType,
-      pointsEarned: points,
-      date: new Date(),
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
-  })
+
+    const data = await req.json()
+
+    // Generate anonymous username if posting anonymously
+    const anonymousUsername = data.isAnonymous ? generateAnonymousUsername() : null
+
+    const post = await db.forumPost.create({
+      data: {
+        userId: session.user.id,
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        isAnonymous: data.isAnonymous ?? true,
+        anonymousUsername
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            level: true
+          }
+        }
+      }
+    })
+
+    // Award XP for creating a post
+    await db.userXPLog.create({
+      data: {
+        userId: session.user.id,
+        activityType: 'FORUM_POST',
+        pointsEarned: 15,
+        description: 'Created a forum post'
+      }
+    })
+
+    await db.user.update({
+      where: { id: session.user.id },
+      data: {
+        totalXP: { increment: 15 }
+      }
+    })
+
+    return NextResponse.json({ 
+      success: true,
+      post: {
+        ...post,
+        user: post.isAnonymous ? {
+          id: post.user.id,
+          name: anonymousUsername,
+          image: null,
+          level: post.user.currentLevel
+        } : post.user
+      }
+    })
+  } catch (error) {
+    console.error('Forum post creation error:', error)
+    return NextResponse.json(
+      { message: 'Failed to create post' },
+      { status: 500 }
+    )
+  }
 }

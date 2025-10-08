@@ -1,22 +1,83 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// NEXTAUTH AUTHENTICATION TABLES
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String? // For email/password auth
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Profile Information
+  username              String?   @unique
+  relationshipStatus    RelationshipStatus @default(SINGLE)
+  hasCompletedOnboarding Boolean  @default(false)
+  cloudinaryPublicId    String?
+  
+  // Streak Information
+  streakStartDate       DateTime?
+  currentStreak         Int      @default(0)
+  longestStreak         Int      @default(0)
+  lastCheckInDate       DateTime?
+  totalResets           Int      @default(0)
+  
+  // Gamification
+  totalXP               Int      @default(0)
+  currentLevel          Int      @default(1)
+  currentTier           UserTier @default(BEGINNER)
+  
+  // Settings
+  notificationsEnabled  Boolean  @default(true)
+  dailyReminderTime     String?  @default("09:00")
+  privacySettings       Json?    @default("{\"showOnLeaderboard\": true, \"allowDirectMessages\": false}")
+  
+  // Privacy & Community
+  anonymousUsername     String?  @unique
+  showStreakPublicly    Boolean  @default(true)
+  
+  // Relations
+  accounts              Account[]
+  sessions              Session[]
+  dailyLogs             DailyLog[]
+  healthMetrics         HealthMetric[]
+  userAchievements      UserAchievement[]
+  userXPLogs            UserXPLog[]
+  forumPosts            ForumPost[]
+  forumComments         ForumComment[]
+  postUpvotes           PostUpvote[]
+  commentUpvotes        CommentUpvote[]
+  urgeLogs              UrgeLog[]
+  dailyChallenges       UserDailyChallenge[]
+  notifications         Notification[]
+  streakShares          StreakShare[]
+  
+  @@index([email])
+  @@index([currentStreak])
+  @@index([totalXP])
+  @@map("users")
 }
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            String  @map("user_id")
   type              String
   provider          String
-  providerAccountId String
+  providerAccountId String  @map("provider_account_id")
   refresh_token     String? @db.Text
   access_token      String? @db.Text
   expires_at        Int?
@@ -28,47 +89,19 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
 }
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
-model User {
-  id                   String    @id @default(cuid())
-  name                 String
-  email                String    @unique
-  emailVerified        DateTime?
-  image                String?
-  hashedPassword       String?
-  relationshipStatus   RelationshipStatus @default(SINGLE)
-  currentStreak        Int       @default(0)
-  longestStreak        Int       @default(0)
-  totalResets          Int       @default(0)
-  streakStart          DateTime?
-  level                Int       @default(1)
-  totalXP              Int       @default(0)
-  onboardingCompleted  Boolean   @default(false)
-  onboardingData       String?   @db.Text
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-
-  accounts      Account[]
-  sessions      Session[]
-  dailyLogs     DailyLog[]
-  healthMetrics HealthMetric[]
-  achievements  UserAchievement[]
-  challenges    UserChallenge[]
-  forumPosts    ForumPost[]
-  postVotes     PostVote[]
-  comments      Comment[]
-  userXP        UserXP[]
-  
-  @@map("users")
+  @@index([userId])
+  @@map("sessions")
 }
 
 model VerificationToken {
@@ -77,215 +110,426 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
+// ============================================
+// STREAK & PROGRESS TRACKING
+// ============================================
+
 model DailyLog {
-  id               String   @id @default(cuid())
-  userId           String
-  date             DateTime
-  moodRating       Int?
-  energyLevel      Int?
-  confidenceLevel  Int?
-  urgeIntensity    Int?
-  notes            String?  @db.Text
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  date                DateTime @default(now())
+  
+  // Daily Tracking
+  moodRating          Int?     @default(5) // 1-10 scale
+  energyLevel         Int?     @default(5) // 1-10 scale
+  confidenceLevel     Int?     @default(5) // 1-10 scale
+  urgeIntensity       Int?     @default(0) // 0-10 scale
+  
+  // Activities
   activitiesCompleted String[] @default([])
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
+  exerciseCompleted   Boolean  @default(false)
+  meditationCompleted Boolean  @default(false)
+  socialInteraction   Boolean  @default(false)
+  
+  // Notes
+  notes               String?  @db.Text
+  triggers            String[] @default([])
+  copingStrategies    String[] @default([])
+  
+  // Metadata
+  checkInTime         DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  
   @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
   @@map("daily_logs")
 }
 
-model HealthMetric {
+model StreakShare {
   id              String   @id @default(cuid())
-  userId          String
-  date            DateTime
-  sleepHours      Float?
-  exerciseMinutes Int?
-  waterIntake     Float?
-  weight          Float?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
+  userId          String   @map("user_id")
+  streakDays      Int
+  shareImageUrl   String?
+  platform        String   // "twitter", "instagram", "facebook", "custom"
+  sharedAt        DateTime @default(now())
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@map("streak_shares")
+}
 
+// ============================================
+// HEALTH & WELLNESS TRACKING
+// ============================================
+
+model HealthMetric {
+  id                    String   @id @default(cuid())
+  userId                String   @map("user_id")
+  date                  DateTime @default(now())
+  
+  // Sleep
+  sleepHours            Float?
+  sleepQuality          Int?     // 1-10 scale
+  
+  // Fitness
+  exerciseMinutes       Int?     @default(0)
+  steps                 Int?     @default(0)
+  workoutType           String?
+  
+  // Social & Confidence
+  socialInteractions    Int?     @default(0)
+  confidenceRating      Int?     // 1-10 scale
+  anxietyLevel          Int?     // 1-10 scale
+  
+  // Energy & Focus
+  energyLevel           Int?     // 1-10 scale
+  focusLevel            Int?     // 1-10 scale
+  productivityRating    Int?     // 1-10 scale
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
   @@map("health_metrics")
 }
 
+// ============================================
+// CRISIS MANAGEMENT
+// ============================================
+
+model UrgeLog {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  urgeIntensity     Int      // 1-10 scale
+  triggers          String[] @default([])
+  context           String?  @db.Text
+  copingStrategy    String?  @db.Text
+  wasSuccessful     Boolean  @default(true)
+  emotionalState    String[] @default([])
+  timeOfDay         String
+  location          String?
+  notes             String?  @db.Text
+  createdAt         DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@map("urge_logs")
+}
+
+// ============================================
+// GAMIFICATION & ACHIEVEMENTS
+// ============================================
+
 model Achievement {
-  id          String            @id @default(cuid())
-  name        String            @unique
-  description String
-  badgeImage  String
-  category    AchievementCategory
-  tier        AchievementTier
-  requirement Int
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-
-  users UserAchievement[]
-
+  id                String   @id @default(cuid())
+  name              String   @unique
+  description       String   @db.Text
+  category          AchievementCategory
+  tier              AchievementTier
+  badgeImageUrl     String?
+  unlockCriteria    Json     // {type: "streak", value: 7} or {type: "xp", value: 1000}
+  xpReward          Int      @default(0)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  
+  userAchievements  UserAchievement[]
+  
   @@map("achievements")
 }
 
 model UserAchievement {
-  id            String   @id @default(cuid())
-  userId        String
-  achievementId String
-  unlockedAt    DateTime @default(now())
-
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  achievementId   String   @map("achievement_id")
+  unlockedAt      DateTime @default(now())
+  progress        Float    @default(100) // Percentage of completion
+  
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement Achievement @relation(fields: [achievementId], references: [id])
-
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
   @@unique([userId, achievementId])
+  @@index([userId])
   @@map("user_achievements")
 }
 
-model Challenge {
-  id          String           @id @default(cuid())
-  title       String
-  description String           @db.Text
-  category    ChallengeCategory
-  tier        ChallengeTier
-  points      Int
-  duration    Int
-  isActive    Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-
-  users UserChallenge[]
-
-  @@map("challenges")
+model UserXPLog {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  activityType    XPActivityType
+  pointsEarned    Int
+  description     String?
+  createdAt       DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@map("user_xp_logs")
 }
 
-model UserChallenge {
-  id          String   @id @default(cuid())
-  userId      String
-  challengeId String
-  progress    Int      @default(0)
-  isCompleted Boolean  @default(false)
-  startedAt   DateTime @default(now())
-  completedAt DateTime?
+// ============================================
+// CHALLENGES SYSTEM
+// ============================================
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  challenge Challenge @relation(fields: [challengeId], references: [id])
+model DailyChallenge {
+  id              String   @id @default(cuid())
+  title           String
+  description     String   @db.Text
+  tier            UserTier
+  category        ChallengeCategory
+  xpReward        Int      @default(0)
+  difficulty      ChallengeDifficulty
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  
+  userChallenges  UserDailyChallenge[]
+  
+  @@map("daily_challenges")
+}
 
-  @@unique([userId, challengeId])
-  @@map("user_challenges")
+model UserDailyChallenge {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  challengeId       String   @map("challenge_id")
+  assignedDate      DateTime @default(now())
+  completedAt       DateTime?
+  isCompleted       Boolean  @default(false)
+  progress          Float    @default(0) // 0-100 percentage
+  
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge DailyChallenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, challengeId, assignedDate])
+  @@index([userId])
+  @@index([assignedDate])
+  @@map("user_daily_challenges")
+}
+
+// ============================================
+// COMMUNITY FORUM
+// ============================================
+
+model ForumCategory {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?     @db.Text
+  icon        String?
+  order       Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  
+  posts       ForumPost[]
+  
+  @@map("forum_categories")
 }
 
 model ForumPost {
   id                String        @id @default(cuid())
-  userId            String
+  userId            String        @map("user_id")
+  categoryId        String        @map("category_id")
   title             String
   content           String        @db.Text
-  category          ForumCategory
+  contentImageUrl   String?
   isAnonymous       Boolean       @default(true)
-  anonymousUsername String?
-  upvotes           Int           @default(0)
-  downvotes         Int           @default(0)
   isPinned          Boolean       @default(false)
+  isLocked          Boolean       @default(false)
+  upvoteCount       Int           @default(0)
+  commentCount      Int           @default(0)
+  viewCount         Int           @default(0)
+  tags              String[]      @default([])
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments Comment[]
-  votes    PostVote[]
-
+  
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  ForumCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  comments  ForumComment[]
+  upvotes   PostUpvote[]
+  
+  @@index([userId])
+  @@index([categoryId])
+  @@index([createdAt])
   @@map("forum_posts")
 }
 
-model PostVote {
-  id     String   @id @default(cuid())
-  userId String
-  postId String
-  type   VoteType
-
-  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, postId])
-  @@map("post_votes")
+model ForumComment {
+  id              String   @id @default(cuid())
+  postId          String   @map("post_id")
+  userId          String   @map("user_id")
+  content         String   @db.Text
+  isAnonymous     Boolean  @default(true)
+  upvoteCount     Int      @default(0)
+  parentCommentId String?  @map("parent_comment_id")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  post          ForumPost       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentComment ForumComment?   @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies       ForumComment[]  @relation("CommentReplies")
+  upvotes       CommentUpvote[]
+  
+  @@index([postId])
+  @@index([userId])
+  @@index([parentCommentId])
+  @@map("forum_comments")
 }
 
-model Comment {
+model PostUpvote {
   id        String   @id @default(cuid())
-  userId    String
-  postId    String
-  content   String   @db.Text
-  isAnonymous Boolean @default(true)
-  anonymousUsername String?
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@map("comments")
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@map("post_upvotes")
 }
 
-model UserXP {
-  id           String   @id @default(cuid())
-  userId       String
-  activityType String
-  pointsEarned Int
-  date         DateTime @default(now())
+model CommentUpvote {
+  id        String   @id @default(cuid())
+  commentId String   @map("comment_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now())
+  
+  comment ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
+  @@map("comment_upvotes")
+}
 
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  type        NotificationType
+  title       String
+  message     String           @db.Text
+  link        String?
+  isRead      Boolean          @default(false)
+  data        Json?
+  createdAt   DateTime         @default(now())
+  readAt      DateTime?
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_xp")
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
-// Enums
+// ============================================
+// ENUMS
+// ============================================
+
 enum RelationshipStatus {
   SINGLE
-  COMMITTED  
-  BROKEN_UP
-  MARRIED
+  COMMITTED
+  RECOVERING_FROM_BREAKUP
+  PREFER_NOT_TO_SAY
+  
+  @@map("relationship_status")
+}
+
+enum UserTier {
+  BEGINNER      // 1-30 days
+  INTERMEDIATE  // 31-90 days
+  ADVANCED      // 91-365 days
+  MASTER        // 365+ days
+  
+  @@map("user_tier")
 }
 
 enum AchievementCategory {
   STREAK
   HEALTH
   SOCIAL
-  MILESTONE
+  COMMUNITY
+  CHALLENGE
+  SPECIAL
+  
+  @@map("achievement_category")
 }
 
 enum AchievementTier {
   BRONZE
   SILVER
   GOLD
+  PLATINUM
   DIAMOND
-  LEGENDARY
+  
+  @@map("achievement_tier")
+}
+
+enum XPActivityType {
+  DAILY_CHECK_IN
+  EXERCISE
+  MEDITATION
+  SOCIAL_INTERACTION
+  FORUM_POST
+  FORUM_COMMENT
+  CHALLENGE_COMPLETED
+  MILESTONE_REACHED
+  URGE_OVERCOME
+  HELP_OTHERS
+  
+  @@map("xp_activity_type")
 }
 
 enum ChallengeCategory {
   FITNESS
-  SOCIAL
-  MINDFULNESS
-  PRODUCTIVITY
-  RECOVERY
-}
-
-enum ChallengeTier {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  MASTER
-}
-
-enum ForumCategory {
-  GENERAL
-  SUCCESS_STORIES
-  STRUGGLES
-  FITNESS
-  RELATIONSHIPS
   MENTAL_HEALTH
+  SOCIAL
+  PRODUCTIVITY
+  CREATIVITY
+  SELF_CARE
+  
+  @@map("challenge_category")
 }
 
-enum VoteType {
-  UP
-  DOWN
+enum ChallengeDifficulty {
+  EASY
+  MEDIUM
+  HARD
+  EXTREME
+  
+  @@map("challenge_difficulty")
+}
+
+enum NotificationType {
+  DAILY_REMINDER
+  MILESTONE
+  ACHIEVEMENT_UNLOCKED
+  CHALLENGE_ASSIGNED
+  FORUM_REPLY
+  ENCOURAGEMENT
+  STREAK_WARNING
+  LEVEL_UP
+  COMMUNITY_UPDATE
+  
+  @@map("notification_type")
 }

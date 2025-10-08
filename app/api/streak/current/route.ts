@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { differenceInDays } from 'date-fns'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       select: {
         currentStreak: true,
         longestStreak: true,
-        streakStart: true,
+        streakStartDate: true,
         totalResets: true,
       }
     })
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Calculate current streak based on streak start date
-    const currentStreak = user.streakStart 
-      ? differenceInDays(new Date(), user.streakStart) + 1
+    const currentStreak = user.streakStartDate 
+      ? differenceInDays(new Date(), user.streakStartDate) + 1
       : 0
 
     // Update current streak if it's different
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       currentStreak,
       longestStreak: user.longestStreak,
-      streakStart: user.streakStart,
+      streakStart: user.streakStartDate,
       totalResets: user.totalResets,
     })
   } catch (error) {

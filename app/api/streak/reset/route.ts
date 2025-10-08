@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         currentStreak: 0,
         longestStreak: newLongestStreak,
         totalResets: user.totalResets + 1,
-        streakStart: new Date(),
+        streakStartDate: new Date(),
       }
     })
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         currentStreak: updatedUser.currentStreak,
         longestStreak: updatedUser.longestStreak,
         totalResets: updatedUser.totalResets,
-        streakStart: updatedUser.streakStart,
+        streakStartDate: updatedUser.streakStartDate,
       }
     })
   } catch (error) {

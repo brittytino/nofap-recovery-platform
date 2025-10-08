@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { HealthTracker } from './_components/HealthTracker'
 import { MoodChart } from './_components/MoodChart'
@@ -7,7 +7,7 @@ import { HealthInsights } from './_components/HealthInsights'
 import { FitnessTracker } from './_components/FitnessTracker'
 
 export default async function HealthPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">
@@ -20,19 +20,19 @@ export default async function HealthPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <HealthTracker userId={session!.user.id} />
+          <HealthTracker userId={session?.user?.id ?? ''} />
         </div>
         <div>
-          <HealthInsights userId={session!.user.id} />
+          <HealthInsights userId={session?.user?.id ?? ''} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MoodChart userId={session!.user.id} />
-        <EnergyChart userId={session!.user.id} />
+        <MoodChart userId={session?.user?.id ?? ''} />
+        <EnergyChart userId={session?.user?.id ?? ''} />
       </div>
 
-      <FitnessTracker userId={session!.user.id} />
+      <FitnessTracker userId={session?.user?.id ?? ''} />
     </div>
   )
 }

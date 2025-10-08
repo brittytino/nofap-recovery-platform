@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { ForumNavigation } from './_components/ForumNavigation'
 import { PostsList } from './_components/PostsList'
@@ -6,7 +6,7 @@ import { CreatePostButton } from './_components/CreatePostButton'
 import { ForumStats } from './_components/ForumStats'
 
 export default async function ForumPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <div className="space-y-6">

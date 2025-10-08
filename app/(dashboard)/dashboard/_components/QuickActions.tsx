@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Modal } from '@/components/ui/Modal'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { 
   Plus, 
   Heart, 
@@ -138,74 +138,80 @@ export function QuickActions() {
         </div>
       </Card>
 
-      {/* Mood Modal */}
-      <Modal isOpen={showMoodModal} onClose={() => setShowMoodModal(false)}>
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-4">How are you feeling?</h3>
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
-              <Button
-                key={rating}
-                onClick={() => logMood(rating)}
-                variant="outline"
-                className="aspect-square flex items-center justify-center"
-              >
-                {rating}
-              </Button>
-            ))}
+      {/* Mood Dialog */}
+      <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
+        <DialogContent>
+          <div className="p-6">
+            <h3 className="text-lg font-semibold mb-4">How are you feeling?</h3>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
+                <Button
+                  key={rating}
+                  onClick={() => logMood(rating)}
+                  variant="outline"
+                  className="aspect-square flex items-center justify-center"
+                >
+                  {rating}
+                </Button>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              1 = Very Low • 10 = Excellent
+            </p>
           </div>
-          <p className="text-sm text-gray-600 text-center">
-            1 = Very Low • 10 = Excellent
-          </p>
-        </div>
-      </Modal>
+        </DialogContent>
+      </Dialog>
 
-      {/* Energy Modal */}
-      <Modal isOpen={showEnergyModal} onClose={() => setShowEnergyModal(false)}>
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Energy Level?</h3>
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
-              <Button
-                key={level}
-                onClick={() => logEnergy(level)}
-                variant="outline"
-                className="aspect-square flex items-center justify-center"
-              >
-                {level}
-              </Button>
-            ))}
+      {/* Energy Dialog */}
+      <Dialog open={showEnergyModal} onOpenChange={setShowEnergyModal}>
+        <DialogContent>
+          <div className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Energy Level?</h3>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+                <Button
+                  key={level}
+                  onClick={() => logEnergy(level)}
+                  variant="outline"
+                  className="aspect-square flex items-center justify-center"
+                >
+                  {level}
+                </Button>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              1 = Exhausted • 10 = Energized
+            </p>
           </div>
-          <p className="text-sm text-gray-600 text-center">
-            1 = Exhausted • 10 = Energized
-          </p>
-        </div>
-      </Modal>
+        </DialogContent>
+      </Dialog>
 
-      {/* Urge Modal */}
-      <Modal isOpen={showUrgeModal} onClose={() => setShowUrgeModal(false)}>
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Urge Intensity?</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Remember: You are stronger than this moment.
-          </p>
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(intensity => (
-              <Button
-                key={intensity}
-                onClick={() => reportUrge(intensity)}
-                variant="outline"
-                className="aspect-square flex items-center justify-center"
-              >
-                {intensity}
-              </Button>
-            ))}
+      {/* Urge Dialog */}
+      <Dialog open={showUrgeModal} onOpenChange={setShowUrgeModal}>
+        <DialogContent>
+          <div className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Urge Intensity?</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Remember: You are stronger than this moment.
+            </p>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(intensity => (
+                <Button
+                  key={intensity}
+                  onClick={() => reportUrge(intensity)}
+                  variant="outline"
+                  className="aspect-square flex items-center justify-center"
+                >
+                  {intensity}
+                </Button>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              1 = Mild • 10 = Very Strong
+            </p>
           </div>
-          <p className="text-sm text-gray-600 text-center">
-            1 = Mild • 10 = Very Strong
-          </p>
-        </div>
-      </Modal>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

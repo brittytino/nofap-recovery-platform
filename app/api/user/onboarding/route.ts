@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from '@/lib/auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
@@ -19,6 +19,21 @@ export async function POST(req: NextRequest) {
       data: {
         relationshipStatus: data.relationshipStatus,
         onboardingCompleted: true,
+        streakStartDate: new Date(),
+        recoveryGoals: data.primaryGoal || '',
+        motivationReason: data.motivation || '',
+        
+        // Notification preferences
+        notificationEnabled: data.notificationEnabled ?? true,
+        morningMotivation: data.morningMotivation ?? true,
+        morningTime: data.morningTime || '08:00',
+        midDayReminder: data.midDayReminder ?? true,
+        midDayTime: data.midDayTime || '14:00',
+        eveningReflection: data.eveningReflection ?? true,
+        eveningTime: data.eveningTime || '20:00',
+        urgeAlerts: data.urgeAlerts ?? true,
+        milestoneAlerts: data.milestoneAlerts ?? true,
+        
         onboardingData: JSON.stringify({
           assessment: {
             previousAttempts: data.previousAttempts,
@@ -51,12 +66,22 @@ export async function POST(req: NextRequest) {
     })
 
     // Award onboarding XP
-    await db.userXP.create({
+    await db.userXPLog.create({
       data: {
         userId: session.user.id,
-        activityType: 'ONBOARDING_COMPLETE',
+        activityType: 'MILESTONE_REACHED',
         pointsEarned: 50,
-        date: new Date()
+        description: 'Completed onboarding and setup'
+      }
+    })
+    
+    // Update user total XP
+    await db.user.update({
+      where: { id: session.user.id },
+      data: {
+        totalXP: {
+          increment: 50
+        }
       }
     })
 
