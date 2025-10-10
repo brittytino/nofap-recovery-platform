@@ -16,7 +16,7 @@ export async function GET(
   { params }: { params: { postId: string } }
 ) {
   try {
-    const comments = await db.comment.findMany({
+    const comments = await db.forumComment.findMany({
       where: {
         postId: params.postId
       },
@@ -26,7 +26,8 @@ export async function GET(
             id: true,
             name: true,
             image: true,
-            currentLevel: true
+            currentLevel: true,
+            anonymousUsername: true
           }
         }
       },
@@ -40,9 +41,10 @@ export async function GET(
       ...comment,
       user: comment.isAnonymous ? {
         id: comment.user.id,
-        name: comment.anonymousUsername || 'Anonymous',
+        name: comment.user.anonymousUsername || 'Anonymous',
         image: null,
-        level: comment.user.currentLevel
+        level: comment.user.currentLevel,
+        anonymousUsername: comment.user.anonymousUsername
       } : comment.user
     }))
 
@@ -69,16 +71,27 @@ export async function POST(
 
     const data = await req.json()
 
-    // Generate anonymous username if commenting anonymously
-    const anonymousUsername = data.isAnonymous ? generateAnonymousUsername() : null
+    // Generate anonymous username if commenting anonymously and user doesn't have one
+    if (data.isAnonymous) {
+      const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { anonymousUsername: true }
+      })
+      
+      if (!user?.anonymousUsername) {
+        await db.user.update({
+          where: { id: session.user.id },
+          data: { anonymousUsername: generateAnonymousUsername() }
+        })
+      }
+    }
 
-    const comment = await db.comment.create({
+    const comment = await db.forumComment.create({
       data: {
         userId: session.user.id,
         postId: params.postId,
         content: data.content,
-        isAnonymous: data.isAnonymous ?? true,
-        anonymousUsername
+        isAnonymous: data.isAnonymous ?? true
       },
       include: {
         user: {
@@ -86,7 +99,8 @@ export async function POST(
             id: true,
             name: true,
             image: true,
-            currentLevel: true
+            currentLevel: true,
+            anonymousUsername: true
           }
         }
       }
@@ -115,9 +129,10 @@ export async function POST(
         ...comment,
         user: comment.isAnonymous ? {
           id: comment.user.id,
-          name: anonymousUsername,
+          name: comment.user.anonymousUsername || 'Anonymous',
           image: null,
-          level: comment.user.currentLevel
+          level: comment.user.currentLevel,
+          anonymousUsername: comment.user.anonymousUsername
         } : comment.user
       }
     })

@@ -20,7 +20,7 @@ export default async function DashboardPage() {
             Welcome back, {session?.user?.name?.split(' ')[0] || 'Friend'}!
           </h1>
           <p className="text-gray-600">
-            Keep up the great progress on your recovery journey
+            Keep building those healthy digital habits
           </p>
         </div>
         <DailyMotivation relationshipStatus={userStats.relationshipStatus} />

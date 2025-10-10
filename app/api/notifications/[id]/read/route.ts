@@ -19,7 +19,7 @@ export async function PATCH(
         id: params.id
       },
       data: {
-        read: true
+        isRead: true
       }
     })
 

@@ -13,7 +13,7 @@ export default async function ForumPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Community Forum</h1>
-          <p className="text-gray-600">Connect, share, and support each other</p>
+          <p className="text-gray-600">Safe space to discuss digital wellness—no judgment</p>
         </div>
         <CreatePostButton />
       </div>

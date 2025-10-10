@@ -33,13 +33,14 @@ export async function GET(req: NextRequest) {
               id: true,
               name: true,
               image: true,
-              currentLevel: true
+              currentLevel: true,
+              anonymousUsername: true
             }
           },
           _count: {
             select: {
               comments: true,
-              votes: true
+              upvotes: true
             }
           }
         },
@@ -58,9 +59,10 @@ export async function GET(req: NextRequest) {
       ...post,
       user: post.isAnonymous ? {
         id: post.user.id,
-        name: post.anonymousUsername || 'Anonymous',
+        name: post.user.anonymousUsername || 'Anonymous',
         image: null,
-        level: post.user.currentLevel
+        level: post.user.currentLevel,
+        anonymousUsername: post.user.anonymousUsername
       } : post.user
     }))
 
@@ -92,17 +94,28 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json()
 
-    // Generate anonymous username if posting anonymously
-    const anonymousUsername = data.isAnonymous ? generateAnonymousUsername() : null
+    // Generate anonymous username if posting anonymously and user doesn't have one
+    if (data.isAnonymous) {
+      const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { anonymousUsername: true }
+      })
+      
+      if (!user?.anonymousUsername) {
+        await db.user.update({
+          where: { id: session.user.id },
+          data: { anonymousUsername: generateAnonymousUsername() }
+        })
+      }
+    }
 
     const post = await db.forumPost.create({
       data: {
         userId: session.user.id,
         title: data.title,
         content: data.content,
-        category: data.category,
-        isAnonymous: data.isAnonymous ?? true,
-        anonymousUsername
+        categoryId: data.categoryId || data.category, // Support both categoryId and category
+        isAnonymous: data.isAnonymous ?? true
       },
       include: {
         user: {
@@ -110,7 +123,8 @@ export async function POST(req: NextRequest) {
             id: true,
             name: true,
             image: true,
-            level: true
+            currentLevel: true,
+            anonymousUsername: true
           }
         }
       }
@@ -133,15 +147,16 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       post: {
         ...post,
         user: post.isAnonymous ? {
           id: post.user.id,
-          name: anonymousUsername,
+          name: post.user.anonymousUsername || 'Anonymous',
           image: null,
-          level: post.user.currentLevel
+          currentLevel: post.user.currentLevel,
+          anonymousUsername: post.user.anonymousUsername
         } : post.user
       }
     })

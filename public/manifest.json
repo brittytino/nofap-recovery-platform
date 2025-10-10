@@ -1,7 +1,7 @@
 {
-  "name": "Recovery Platform - Your Journey to Better Health",
-  "short_name": "Recovery Platform",
-  "description": "A comprehensive platform for personal recovery, streak tracking, and community support",
+  "name": "Clarity - Digital Wellness & Dopamine Detox",
+  "short_name": "Clarity",
+  "description": "Break free from digital addiction. Track social media, gaming, streaming, and adult content habits. Build real-world connections.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

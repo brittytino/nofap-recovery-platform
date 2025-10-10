@@ -24,46 +24,46 @@ export default function LandingPage() {
   const features = [
     {
       icon: Target,
-      title: 'Streak Tracking',
-      description: 'Visual progress tracking with milestone celebrations and heat map calendar',
+      title: 'Multi-Habit Tracking',
+      description: 'Track progress across multiple addictions with visual streak calendar and milestones',
       color: 'text-green-600 bg-green-50'
     },
     {
       icon: Trophy,
-      title: 'Gamified Challenges',
-      description: 'Tier-based challenges and achievement system to keep you motivated',
+      title: 'Gamified Progress',
+      description: 'XP system, achievements, and tier-based challenges to keep you motivated',
       color: 'text-yellow-600 bg-yellow-50'
     },
     {
       icon: Heart,
-      title: 'Health Monitoring',
-      description: 'Track mood, energy levels, and overall wellness improvements',
+      title: 'Wellness Analytics',
+      description: 'Track how digital detox improves mood, energy, sleep, and real-world connections',
       color: 'text-red-600 bg-red-50'
     },
     {
       icon: Users,
-      title: 'Community Support',
-      description: 'Connect with others on similar journeys through public forums',
+      title: 'Anonymous Community',
+      description: 'Safe space to discuss social media, gaming, streaming, and adult content challenges',
       color: 'text-blue-600 bg-blue-50'
     },
     {
       icon: Zap,
       title: 'Smart Motivation',
-      description: 'Personalized daily motivations based on your relationship status',
+      description: 'Personalized daily motivation addressing your specific digital wellness goals',
       color: 'text-purple-600 bg-purple-50'
     },
     {
       icon: Shield,
-      title: 'Crisis Support',
-      description: 'Immediate access to coping strategies and emergency resources',
+      title: 'Urge Management',
+      description: 'Immediate coping strategies, breathing exercises, and pattern recognition tools',
       color: 'text-orange-600 bg-orange-50'
     }
   ]
 
   const stats = [
     { number: '10K+', label: 'Active Users' },
-    { number: '2.5M+', label: 'Days Recovered' },
-    { number: '89%', label: 'Success Rate' },
+    { number: '2.5M+', label: 'Days of Progress' },
+    { number: '89%', label: 'Report Improved Focus' },
     { number: '24/7', label: 'Support Available' }
   ]
 
@@ -71,17 +71,17 @@ export default function LandingPage() {
     {
       name: 'Alex M.',
       streak: 180,
-      text: 'The gamification aspect made all the difference. Seeing my progress visually kept me motivated every day.'
+      text: 'I went from 8 hours of gaming daily to building real friendships. The gamification here actually helped me quit gaming—ironic but it works!'
     },
     {
-      name: 'Sarah K.',
+      name: 'Jordan K.',
       streak: 365,
-      text: 'The community support helped me through the toughest moments. I\'m now helping others on their journey.'
+      text: 'Breaking my social media addiction gave me my life back. I sleep better, have real conversations, and actually remember what I do each day.'
     },
     {
-      name: 'Mike R.',
+      name: 'Sam R.',
       streak: 90,
-      text: 'The daily motivations based on my relationship status were incredibly personalized and helpful.'
+      text: 'The multi-addiction tracking was key for me. I realized I was just switching between TikTok, Netflix, and YouTube. Now I track all of it.'
     }
   ]
 
@@ -93,11 +93,11 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-recovery-500 to-recovery-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">R</span>
+                <span className="text-white font-bold text-lg">C</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-gray-900">Recovery Platform</span>
-                <span className="text-xs text-gray-500">Your Journey to Better Health</span>
+                <span className="font-bold text-gray-900">Clarity</span>
+                <span className="text-xs text-gray-500">Digital Wellness & Dopamine Detox</span>
               </div>
             </div>
             
@@ -119,14 +119,14 @@ export default function LandingPage() {
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Start Your
+            Reclaim Your Attention.
             <span className="bg-gradient-to-r from-recovery-500 to-recovery-600 bg-clip-text text-transparent">
-              {' '}Recovery Journey
+              {' '}Find Your Clarity.
             </span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Join thousands who have transformed their lives through our comprehensive platform 
-            for personal recovery, streak tracking, and community support.
+            Break free from dopamine addiction cycles—social media, gaming, streaming, and adult content. 
+            Replace destructive digital habits with meaningful real-world experiences. Completely free forever.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
@@ -160,11 +160,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need for Success
+              Everything You Need for Digital Wellness
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our platform combines proven recovery techniques with modern technology 
-              to support your journey every step of the way.
+              Comprehensive tools to break free from social media, gaming, streaming, and adult content. 
+              Build real-world habits that actually matter.
             </p>
           </div>
 
@@ -194,7 +194,7 @@ export default function LandingPage() {
               How It Works
             </h2>
             <p className="text-xl text-gray-600">
-              Simple steps to start your recovery journey
+              Simple steps to start your wellness transformation
             </p>
           </div>
 
@@ -215,7 +215,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Set Goals</h3>
               <p className="text-gray-600">
-                Define your recovery goals and choose challenges that motivate you
+                Select your digital wellness goals and track multiple habits simultaneously
               </p>
             </div>
             
@@ -225,7 +225,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
               <p className="text-gray-600">
-                Monitor your streaks, mood, and celebrate achievements along the way
+                See how reducing screen time improves focus, energy, sleep, and real-world connections
               </p>
             </div>
           </div>
@@ -277,11 +277,11 @@ export default function LandingPage() {
       <section className="py-20 bg-gradient-to-r from-recovery-500 to-recovery-600">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Start Your Journey?
+            Ready to Reclaim Your Attention?
           </h2>
           <p className="text-xl text-recovery-100 mb-8">
-            Join thousands of people who have already transformed their lives. 
-            Your recovery starts today.
+            Join thousands breaking free from digital addiction. 
+            Your transformation starts today—completely free forever.
           </p>
           <Link href="/register">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-3">
@@ -299,12 +299,12 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-8 h-8 bg-recovery-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">R</span>
+                  <span className="text-white font-bold">C</span>
                 </div>
-                <span className="font-semibold">Recovery Platform</span>
+                <span className="font-semibold">Clarity</span>
               </div>
               <p className="text-gray-400 text-sm">
-                Supporting your journey to better health and personal growth.
+                Break free from dopamine addiction. Build a life worth living.
               </p>
             </div>
             
@@ -337,7 +337,7 @@ export default function LandingPage() {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Recovery Platform. All rights reserved.</p>
+            <p>&copy; 2025 Clarity. All rights reserved.</p>
           </div>
         </div>
       </footer>

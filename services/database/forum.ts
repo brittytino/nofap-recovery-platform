@@ -6,16 +6,35 @@ export async function createForumPost(data: {
   title: string
   content: string
   category: string
+  categoryId: string
   isAnonymous: boolean
 }) {
+  // Generate anonymous username if posting anonymously and user doesn't have one
+  if (data.isAnonymous) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId },
+      select: { anonymousUsername: true }
+    })
+    
+    if (!user?.anonymousUsername) {
+      await db.user.update({
+        where: { id: data.userId },
+        data: { anonymousUsername: generateAnonymousUsername() }
+      })
+    }
+  }
+
   return await db.forumPost.create({
     data: {
-      ...data,
-      anonymousUsername: data.isAnonymous ? generateAnonymousUsername() : null,
-    },
+      userId: data.userId,
+      categoryId: data.categoryId,
+      title: data.title,
+      content: data.content,
+      isAnonymous: data.isAnonymous
+    } as any,
     include: {
       _count: {
-        select: { comments: true, votes: true }
+        select: { comments: true, upvotes: true }
       }
     }
   })
@@ -91,11 +110,10 @@ export async function getForumPosts(params: {
 export async function voteOnPost(data: {
   userId: string
   postId: string
-  type: 'up' | 'down'
 }) {
-  const existingVote = await db.postVote.findUnique({
+  const existingVote = await db.postUpvote.findUnique({
     where: {
-      userId_postId: {
+      postId_userId: {
         userId: data.userId,
         postId: data.postId
       }
@@ -103,56 +121,33 @@ export async function voteOnPost(data: {
   })
 
   if (existingVote) {
-    if (existingVote.type === data.type) {
-      // Remove vote
-      await db.postVote.delete({
-        where: { id: existingVote.id }
-      })
-      
-      // Update post vote count
-      const updateData = data.type === 'up' 
-        ? { upvotes: { decrement: 1 } }
-        : { downvotes: { decrement: 1 } }
-        
-      await db.forumPost.update({
-        where: { id: data.postId },
-        data: updateData
-      })
-    } else {
-      // Change vote
-      await db.postVote.update({
-        where: { id: existingVote.id },
-        data: { type: data.type }
-      })
-      
-      // Update post vote counts
-      const updateData = data.type === 'up'
-        ? { upvotes: { increment: 1 }, downvotes: { decrement: 1 } }
-        : { upvotes: { decrement: 1 }, downvotes: { increment: 1 } }
-        
-      await db.forumPost.update({
-        where: { id: data.postId },
-        data: updateData
-      })
-    }
+    // Remove upvote if already exists (toggle behavior)
+    await db.postUpvote.delete({
+      where: { id: existingVote.id }
+    })
+    
+    // Decrement post upvote count
+    await db.forumPost.update({
+      where: { id: data.postId },
+      data: {
+        upvoteCount: { decrement: 1 }
+      }
+    })
   } else {
-    // Create new vote
-    await db.postVote.create({
+    // Create new upvote
+    await db.postUpvote.create({
       data: {
         userId: data.userId,
-        postId: data.postId,
-        type: data.type
+        postId: data.postId
       }
     })
     
-    // Update post vote count
-    const updateData = data.type === 'up' 
-      ? { upvotes: { increment: 1 } }
-      : { downvotes: { increment: 1 } }
-      
+    // Increment post upvote count
     await db.forumPost.update({
       where: { id: data.postId },
-      data: updateData
+      data: {
+        upvoteCount: { increment: 1 }
+      }
     })
   }
 }

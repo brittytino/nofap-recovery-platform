@@ -34,7 +34,7 @@ export function AchievementPopup({ achievement, onClose }: AchievementPopupProps
           initial={{ opacity: 0, y: -100 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -100 }}
-          className="fixed top-4 right-4 z-50 max-w-md"
+          style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 50, maxWidth: '28rem' }}
         >
           <Card className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 shadow-lg">
             <div className="flex items-start justify-between mb-4">

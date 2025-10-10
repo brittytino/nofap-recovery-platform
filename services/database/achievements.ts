@@ -4,7 +4,7 @@ export async function checkAndUnlockAchievements(userId: string) {
   const user = await db.user.findUnique({
     where: { id: userId },
     include: {
-      achievements: {
+      userAchievements: {
         include: { achievement: true }
       },
       dailyLogs: {
@@ -16,7 +16,7 @@ export async function checkAndUnlockAchievements(userId: string) {
 
   if (!user) return []
 
-  const unlockedAchievementIds = user.achievements.map(ua => ua.achievementId)
+  const unlockedAchievementIds = user.userAchievements.map(ua => ua.achievementId)
   const availableAchievements = await db.achievement.findMany({
     where: {
       id: { notIn: unlockedAchievementIds },
@@ -28,10 +28,13 @@ export async function checkAndUnlockAchievements(userId: string) {
 
   for (const achievement of availableAchievements) {
     let qualifies = false
+    
+    // Parse the unlockCriteria which is stored as JSON
+    const criteria = achievement.unlockCriteria as { type: string; value: number }
 
     switch (achievement.category) {
       case 'STREAK':
-        qualifies = user.currentStreak >= achievement.requirement
+        qualifies = user.currentStreak >= (criteria.value || 0)
         break
 
       case 'HEALTH':
@@ -41,9 +44,9 @@ export async function checkAndUnlockAchievements(userId: string) {
         }
         break
 
-      case 'MILESTONE':
+      case 'SPECIAL':
         if (achievement.name === 'Phoenix Rising') {
-          qualifies = user.totalResets >= achievement.requirement
+          qualifies = user.totalResets >= (criteria.value || 0)
         }
         break
     }

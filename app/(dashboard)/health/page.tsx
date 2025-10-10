@@ -14,7 +14,7 @@ export default async function HealthPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Health & Wellness</h1>
-          <p className="text-gray-600">Track your physical and mental health progress</p>
+          <p className="text-gray-600">See how digital wellness improves your physical and mental health</p>
         </div>
       </div>
 

@@ -14,7 +14,7 @@ async function main() {
     // STREAK ACHIEVEMENTS
     {
       name: 'First Step',
-      description: 'Complete your first day of recovery',
+      description: 'Complete your first day of digital wellness',
       category: 'STREAK',
       tier: 'BRONZE',
       unlockCriteria: { type: 'streak', value: 1 },
@@ -23,7 +23,7 @@ async function main() {
     },
     {
       name: 'Week Warrior',
-      description: 'Reach a 7-day streak',
+      description: 'Maintain a 7-day streak of intentional living',
       category: 'STREAK',
       tier: 'BRONZE',
       unlockCriteria: { type: 'streak', value: 7 },
@@ -32,7 +32,7 @@ async function main() {
     },
     {
       name: 'Two Weeks Strong',
-      description: 'Maintain a 14-day streak',
+      description: 'Build healthy habits for 14 consecutive days',
       category: 'STREAK',
       tier: 'SILVER',
       unlockCriteria: { type: 'streak', value: 14 },
@@ -41,7 +41,7 @@ async function main() {
     },
     {
       name: 'Monthly Champion',
-      description: 'Achieve a 30-day streak',
+      description: 'Achieve 30 days of digital wellness',
       category: 'STREAK',
       tier: 'SILVER',
       unlockCriteria: { type: 'streak', value: 30 },
@@ -50,7 +50,7 @@ async function main() {
     },
     {
       name: '90 Days of Change',
-      description: 'Complete the critical 90-day reboot',
+      description: 'Complete 90 days of transformation',
       category: 'STREAK',
       tier: 'GOLD',
       unlockCriteria: { type: 'streak', value: 90 },
@@ -59,7 +59,7 @@ async function main() {
     },
     {
       name: 'Half Year Hero',
-      description: 'Reach 180 days of recovery',
+      description: 'Reach 180 days of intentional living',
       category: 'STREAK',
       tier: 'PLATINUM',
       unlockCriteria: { type: 'streak', value: 180 },
@@ -68,7 +68,7 @@ async function main() {
     },
     {
       name: 'Year of Transformation',
-      description: 'Complete a full year of recovery',
+      description: 'Complete a full year of digital wellness',
       category: 'STREAK',
       tier: 'DIAMOND',
       unlockCriteria: { type: 'streak', value: 365 },
@@ -204,7 +204,7 @@ async function main() {
     },
     {
       name: 'Phoenix Rising',
-      description: 'Rebuild a 30-day streak after a reset',
+      description: 'Rebuild a 30-day streak after setbacks',
       category: 'SPECIAL',
       tier: 'PLATINUM',
       unlockCriteria: { type: 'activity', value: 'comeback_30' },
@@ -216,8 +216,8 @@ async function main() {
   for (const achievement of achievements) {
     await prisma.achievement.upsert({
       where: { name: achievement.name },
-      update: achievement,
-      create: achievement,
+      update: achievement as any,
+      create: achievement as any,
     })
   }
 
@@ -408,7 +408,7 @@ async function main() {
     },
     {
       title: 'Write Your Story',
-      description: 'Write 500 words about your recovery journey',
+      description: 'Write 500 words about your wellness transformation',
       tier: 'INTERMEDIATE',
       category: 'CREATIVITY',
       xpReward: 40,
@@ -460,7 +460,7 @@ async function main() {
 
   for (const challenge of challenges) {
     await prisma.dailyChallenge.create({
-      data: challenge,
+      data: challenge as any,
     })
   }
 
@@ -475,72 +475,86 @@ async function main() {
     {
       name: 'Getting Started',
       slug: 'getting-started',
-      description: 'New to recovery? Start here for tips, guidance, and support',
+      description: 'New to digital wellness? Start here for tips, guidance, and support',
       icon: '🌱',
       order: 1,
     },
     {
       name: 'Success Stories',
       slug: 'success-stories',
-      description: 'Share your victories and inspire others on their journey',
+      description: 'Share your victories and inspire others on their wellness journey',
       icon: '🏆',
       order: 2,
     },
     {
-      name: 'Urge Management',
-      slug: 'urge-management',
-      description: 'Strategies and support for dealing with urges',
-      icon: '🛡️',
+      name: 'Social Media Detox',
+      slug: 'social-media-detox',
+      description: 'Breaking free from endless scrolling and social media addiction',
+      icon: '📱',
       order: 3,
+    },
+    {
+      name: 'Gaming Addiction',
+      slug: 'gaming-addiction',
+      description: 'Support for overcoming gaming and video game addiction',
+      icon: '🎮',
+      order: 4,
+    },
+    {
+      name: 'Streaming Habits',
+      slug: 'streaming-habits',
+      description: 'Managing binge-watching and streaming platform addiction',
+      icon: '📺',
+      order: 5,
+    },
+    {
+      name: 'Adult Content Recovery',
+      slug: 'adult-content-recovery',
+      description: 'Support and strategies for overcoming adult content addiction',
+      icon: '🛡️',
+      order: 6,
     },
     {
       name: 'Fitness & Health',
       slug: 'fitness-health',
       description: 'Exercise, nutrition, and physical wellness discussions',
       icon: '💪',
-      order: 4,
+      order: 7,
     },
     {
       name: 'Relationships',
       slug: 'relationships',
-      description: 'Dating, social skills, and relationship advice',
+      description: 'Building real connections and improving social skills',
       icon: '❤️',
-      order: 5,
+      order: 8,
     },
     {
       name: 'Mental Health',
       slug: 'mental-health',
       description: 'Anxiety, depression, and emotional well-being support',
       icon: '🧠',
-      order: 6,
+      order: 9,
+    },
+    {
+      name: 'Productivity',
+      slug: 'productivity',
+      description: 'Focus, deep work, and building productive habits',
+      icon: '⚡',
+      order: 10,
     },
     {
       name: 'Accountability',
       slug: 'accountability',
       description: 'Find accountability partners and track progress together',
       icon: '🤝',
-      order: 7,
+      order: 11,
     },
     {
-      name: 'Motivation',
-      slug: 'motivation',
-      description: 'Inspirational content to keep you going',
-      icon: '⚡',
-      order: 8,
-    },
-    {
-      name: 'Relapse Recovery',
-      slug: 'relapse-recovery',
-      description: 'Support and guidance for getting back on track',
+      name: 'Setbacks & Recovery',
+      slug: 'setbacks-recovery',
+      description: 'Support and guidance for bouncing back stronger',
       icon: '🔄',
-      order: 9,
-    },
-    {
-      name: 'Science & Education',
-      slug: 'science-education',
-      description: 'Research, articles, and educational resources',
-      icon: '📚',
-      order: 10,
+      order: 12,
     },
   ]
 

@@ -8,8 +8,8 @@ import { PWAProvider } from '@/components/providers/PWAProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Recovery Platform - Your Journey to Better Health',
-  description: 'A comprehensive platform for personal recovery, streak tracking, and community support',
+  title: 'Clarity - Digital Wellness & Dopamine Detox Platform',
+  description: 'Break free from dopamine addiction cycles—social media, gaming, streaming, and adult content. Track multiple habits, build real-world connections. Completely free forever.',
   manifest: '/manifest.json',
   themeColor: '#22c55e',
   viewport: {

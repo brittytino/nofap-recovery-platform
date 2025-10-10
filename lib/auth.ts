@@ -8,7 +8,7 @@ import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
 export const authConfig: NextAuthConfig = {
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as any,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -71,12 +71,12 @@ export const authConfig: NextAuthConfig = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }): Promise<any> {
       return {
         ...session,
         user: {
           ...session.user,
-          id: token.id,
+          id: token.id as string,
         },
       }
     },

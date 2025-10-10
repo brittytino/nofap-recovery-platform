@@ -68,13 +68,13 @@ export default function LoginPage() {
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-recovery-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">R</span>
+            <span className="text-white text-2xl font-bold">C</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>
           <p className="text-gray-600">
-            Sign in to continue your recovery journey
+            Sign in to continue your digital wellness journey
           </p>
         </div>
 

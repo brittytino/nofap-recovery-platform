@@ -34,11 +34,13 @@ export async function POST(req: NextRequest) {
           moodRating: data.moodRating,
           energyLevel: data.energyLevel,
           confidenceLevel: data.confidenceLevel,
-          sleepQuality: data.sleepQuality,
           urgeIntensity: data.urgeIntensity,
           notes: data.notes || existingLog.notes,
           triggers: data.triggers || [],
           activitiesCompleted: data.activitiesCompleted || [],
+          exerciseCompleted: data.exerciseCompleted || existingLog.exerciseCompleted,
+          meditationCompleted: data.meditationCompleted || existingLog.meditationCompleted,
+          socialInteraction: data.socialInteraction || existingLog.socialInteraction,
           updatedAt: new Date()
         }
       })
@@ -51,7 +53,6 @@ export async function POST(req: NextRequest) {
           moodRating: data.moodRating,
           energyLevel: data.energyLevel,
           confidenceLevel: data.confidenceLevel,
-          sleepQuality: data.sleepQuality,
           urgeIntensity: data.urgeIntensity,
           notes: data.notes,
           triggers: data.triggers || [],
@@ -84,11 +85,11 @@ export async function POST(req: NextRequest) {
       await db.urgeLog.create({
         data: {
           userId: session.user.id,
-          intensity: data.urgeIntensity,
+          urgeIntensity: data.urgeIntensity,
           triggers: data.triggers || [],
           context: data.notes,
           wasSuccessful: true, // They're checking in, so they resisted
-          copingStrategies: []
+          timeOfDay: new Date().getHours() < 12 ? 'MORNING' : new Date().getHours() < 17 ? 'AFTERNOON' : 'EVENING'
         }
       })
     }
@@ -134,9 +135,9 @@ async function updateStreak(userId: string) {
     return
   }
 
-  const daysSinceLastCheckIn = Math.floor(
-    (now.getTime() - lastCheckIn.getTime()) / (1000 * 60 * 60 * 24)
-  )
+  const daysSinceLastCheckIn = lastCheckIn 
+    ? Math.floor((now.getTime() - lastCheckIn.getTime()) / (1000 * 60 * 60 * 24))
+    : 999 // Large number to trigger streak reset
 
   if (daysSinceLastCheckIn === 0) {
     // Same day, no change needed
@@ -176,12 +177,17 @@ async function checkMilestoneAchievements(userId: string, streak: number) {
   const milestones = [7, 14, 30, 60, 90, 180, 365]
   
   if (milestones.includes(streak)) {
-    // Check if achievement exists
-    const achievement = await db.achievement.findFirst({
+    // Get all streak achievements and find the one matching this streak value
+    const achievements = await db.achievement.findMany({
       where: {
         category: 'STREAK',
-        requirement: streak
+        isActive: true
       }
+    })
+    
+    const achievement = achievements.find(a => {
+      const criteria = a.unlockCriteria as any
+      return criteria?.value === streak
     })
 
     if (achievement) {

@@ -37,7 +37,7 @@ export class PushNotificationService {
           userVisibleOnly: true,
           applicationServerKey: this.urlBase64ToUint8Array(
             process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
-          )
+          ) as any
         })
   
         // Send subscription to server
@@ -88,9 +88,8 @@ export class PushNotificationService {
         await registration.showNotification(title, {
           icon: '/icons/icon-192x192.png',
           badge: '/icons/icon-72x72.png',
-          vibrate: [100, 50, 100],
           ...options
-        })
+        } as any)
       } else {
         new Notification(title, options)
       }

@@ -26,16 +26,16 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
 
   const questions = [
     {
-      title: 'Previous Recovery Attempts',
-      subtitle: 'Tell us about your past experiences (optional)',
+      title: 'Previous Attempts',
+      subtitle: 'Tell us about your past experiences with digital wellness (optional)',
       component: (
         <div className="space-y-4">
-          <Label htmlFor="attempts">Have you tried recovery before?</Label>
+          <Label htmlFor="attempts">Have you tried breaking digital habits before?</Label>
           <Textarea
             id="attempts"
             value={responses.previousAttempts}
             onChange={(e) => setResponses(prev => ({ ...prev, previousAttempts: e.target.value }))}
-            placeholder="Share about previous attempts, what worked, what didn't..."
+            placeholder="Share about previous attempts to reduce screen time, what worked, what didn't..."
             rows={4}
           />
         </div>
@@ -64,17 +64,18 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
     },
     {
       title: 'Main Triggers',
-      subtitle: 'What situations or feelings tend to be challenging?',
+      subtitle: 'What situations or feelings lead to excessive digital use?',
       component: (
         <div className="space-y-3">
           {[
             'Stress/Anxiety',
             'Boredom',
             'Loneliness',
-            'Social Media',
-            'Relationship Issues',
+            'Procrastination',
+            'FOMO (Fear of Missing Out)',
             'Work Pressure',
             'Sleep Issues',
+            'Social Situations',
             'Other'
           ].map((trigger) => (
             <label key={trigger} className="flex items-center space-x-2">
@@ -84,7 +85,7 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
                 onChange={(e) => {
                   const newTriggers = e.target.checked
                     ? [...responses.mainTriggers, trigger]
-                    : responses.mainTriggers.filter(t => t !== trigger)
+                    : responses.mainTriggers.filter((t: string) => t !== trigger)
                   setResponses(prev => ({ ...prev, mainTriggers: newTriggers }))
                 }}
                 className="rounded"
@@ -118,7 +119,7 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
     },
     {
       title: 'Motivation',
-      subtitle: 'What motivates you to pursue recovery?',
+      subtitle: 'What motivates you to pursue digital wellness?',
       component: (
         <div className="space-y-4">
           <Label htmlFor="motivation">Your main motivation</Label>
@@ -126,7 +127,7 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
             id="motivation"
             value={responses.motivation}
             onChange={(e) => setResponses(prev => ({ ...prev, motivation: e.target.value }))}
-            placeholder="What drives you to make this change? What do you hope to achieve?"
+            placeholder="What drives you to make this change? Better focus? Real connections? More time for hobbies?"
             rows={4}
           />
         </div>

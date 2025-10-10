@@ -43,9 +43,9 @@ const strategies = [
     color: 'text-red-600 bg-red-50',
     strategies: [
       'Write in your journal about your feelings',
-      'Call a trusted friend or family member',
+      'Call a trusted friend or family member (in person, not text)',
       'Practice self-compassion and forgiveness',
-      'Remember your "why" for recovery'
+      'Remember your "why" for digital wellness'
     ]
   },
   {
@@ -94,7 +94,7 @@ export function CopingStrategies() {
     <Card className="p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Coping Strategies</h2>
       <p className="text-gray-600 mb-6">
-        Choose a strategy that resonates with you right now
+        When the urge to scroll, game, or binge hits, try one of these strategies
       </p>
 
       <div className="space-y-3">

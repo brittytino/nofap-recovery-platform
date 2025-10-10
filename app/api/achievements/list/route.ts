@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       where: { isActive: true },
       orderBy: [
         { tier: 'asc' },
-        { requirement: 'asc' }
+        { name: 'asc' }
       ]
     })
 
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
           take: 30
         },
         forumPosts: true,
-        achievements: true
+        userAchievements: true
       }
     })
 
@@ -52,24 +52,28 @@ export async function GET(req: NextRequest) {
       let progress = 0
       
       if (!isUnlocked && user) {
+        // Extract requirement from unlockCriteria JSON
+        const criteria = achievement.unlockCriteria as any
+        const requirement = criteria?.value || 0
+        
         switch (achievement.category) {
           case 'STREAK':
-            progress = Math.min(user.currentStreak, achievement.requirement)
+            progress = Math.min(user.currentStreak, requirement)
             break
           case 'HEALTH':
             if (achievement.name === 'Mood Tracker') {
               const consecutiveDays = calculateConsecutiveMoodLogs(user.dailyLogs)
-              progress = Math.min(consecutiveDays, achievement.requirement)
+              progress = Math.min(consecutiveDays, requirement)
             }
             break
           case 'SOCIAL':
             if (achievement.name === 'Community Helper') {
-              progress = Math.min(user.forumPosts.length, achievement.requirement)
+              progress = Math.min(user.forumPosts.length, requirement)
             }
             break
-          case 'MILESTONE':
+          case 'SPECIAL':
             if (achievement.name === 'Phoenix Rising') {
-              progress = Math.min(user.totalResets, achievement.requirement)
+              progress = Math.min(user.totalResets, requirement)
             }
             break
         }

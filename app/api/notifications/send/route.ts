@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         type: type || 'COMMUNITY_UPDATE',
         title,
         message,
-        actionUrl
+        link: actionUrl
       }
     })
 
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       take: 50
     })
 
-    const unreadCount = notifications.filter(n => !n.read).length
+    const unreadCount = notifications.filter(n => !n.isRead).length
 
     return NextResponse.json({ 
       notifications,

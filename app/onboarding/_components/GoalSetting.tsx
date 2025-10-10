@@ -28,13 +28,15 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
     'Improve sleep quality',
     'Increase energy levels',
     'Better mood stability',
-    'Enhanced focus',
-    'Reduced anxiety',
-    'Improved confidence',
+    'Enhanced focus and concentration',
+    'Reduced anxiety and stress',
+    'Build real-world connections',
     'Better relationships',
-    'Increased motivation',
+    'More time for hobbies',
     'Physical fitness',
-    'Mental clarity'
+    'Mental clarity',
+    'Reduce FOMO',
+    'Break dopamine addiction'
   ]
 
   const timelineOptions = [
@@ -51,11 +53,13 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
     'Improved relationships',
     'Enhanced self-control',
     'Greater life satisfaction',
-    'Reduced shame/guilt',
-    'Increased confidence',
+    'Reduced screen time',
+    'More real-world activities',
     'Better physical health',
     'Mental clarity',
-    'Spiritual growth'
+    'Less FOMO and anxiety',
+    'Improved focus',
+    'More present in conversations'
   ]
 
   const toggleArrayItem = (array: string[], item: string, setter: (items: string[]) => void) => {
@@ -73,9 +77,9 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
     <Card className="p-8">
       <div className="text-center mb-8">
         <Target className="h-12 w-12 text-recovery-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Recovery Goals</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Digital Wellness Goals</h2>
         <p className="text-gray-600">
-          Clear goals help maintain focus and motivation throughout your journey
+          Clear goals help you build intentional habits and reclaim your attention
         </p>
       </div>
 
@@ -83,13 +87,13 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
         {/* Primary Goal */}
         <div>
           <Label htmlFor="primaryGoal" className="text-base font-semibold text-gray-900 mb-3 block">
-            What's your primary recovery goal?
+            What's your primary digital wellness goal?
           </Label>
           <Textarea
             id="primaryGoal"
             value={goals.primaryGoal}
             onChange={(e) => setGoals(prev => ({ ...prev, primaryGoal: e.target.value }))}
-            placeholder="e.g., I want to break free from compulsive behaviors and live a more fulfilling life..."
+            placeholder="e.g., I want to stop mindless social media scrolling and have more time for real hobbies..."
             rows={3}
             className="w-full"
           />

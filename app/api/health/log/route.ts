@@ -35,12 +35,14 @@ export async function POST(req: NextRequest) {
           sleepHours: data.sleepHours ?? existingMetric.sleepHours,
           sleepQuality: data.sleepQuality ?? existingMetric.sleepQuality,
           exerciseMinutes: data.exerciseMinutes ?? existingMetric.exerciseMinutes,
-          exerciseType: data.exerciseType ?? existingMetric.exerciseType,
+          workoutType: data.exerciseType ?? data.workoutType ?? existingMetric.workoutType,
           steps: data.steps ?? existingMetric.steps,
-          waterIntake: data.waterIntake ?? existingMetric.waterIntake,
-          weight: data.weight ?? existingMetric.weight,
-          socialInteraction: data.socialInteraction ?? existingMetric.socialInteraction,
-          meditationMinutes: data.meditationMinutes ?? existingMetric.meditationMinutes,
+          socialInteractions: data.socialInteraction ?? data.socialInteractions ?? existingMetric.socialInteractions,
+          confidenceRating: data.confidenceRating ?? existingMetric.confidenceRating,
+          anxietyLevel: data.anxietyLevel ?? existingMetric.anxietyLevel,
+          energyLevel: data.energyLevel ?? existingMetric.energyLevel,
+          focusLevel: data.focusRating ?? data.focusLevel ?? existingMetric.focusLevel,
+          productivityRating: data.productivityRating ?? existingMetric.productivityRating,
           updatedAt: new Date()
         }
       })
@@ -53,12 +55,14 @@ export async function POST(req: NextRequest) {
           sleepHours: data.sleepHours,
           sleepQuality: data.sleepQuality,
           exerciseMinutes: data.exerciseMinutes,
-          exerciseType: data.exerciseType,
+          workoutType: data.exerciseType || data.workoutType,
           steps: data.steps,
-          waterIntake: data.waterIntake,
-          weight: data.weight,
-          socialInteraction: data.socialInteraction,
-          meditationMinutes: data.meditationMinutes
+          socialInteractions: data.socialInteraction || data.socialInteractions,
+          confidenceRating: data.confidenceRating,
+          anxietyLevel: data.anxietyLevel,
+          energyLevel: data.energyLevel,
+          focusLevel: data.focusRating || data.focusLevel,
+          productivityRating: data.productivityRating
         }
       })
 

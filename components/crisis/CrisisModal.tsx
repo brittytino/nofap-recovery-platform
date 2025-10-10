@@ -28,10 +28,12 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
     'Stress/Anxiety',
     'Boredom',
     'Loneliness',
-    'Social Media',
+    'FOMO',
+    'Procrastination',
     'Work Pressure',
     'Relationship Issues',
     'Sleep Deprivation',
+    'Saw Social Media',
     'Other'
   ]
 
@@ -249,7 +251,7 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
             <AlertCircle className="h-6 w-6 text-red-500" />
             <DialogTitle className="text-2xl">Crisis Support</DialogTitle>
           </div>
-          <p className="text-gray-600">You're experiencing an urge. That's normal. Let's work through this together.</p>
+          <p className="text-gray-600">You're experiencing an urge to go back to old digital habits. That's normal. Let's work through this together.</p>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -334,8 +336,8 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
           </div>
 
           <div className="text-center text-sm text-gray-600">
-            <p className="font-medium">Remember: Urges are temporary. You've overcome them before, and you can do it again.</p>
-            <p className="mt-1">Every time you resist, you become stronger. 💪</p>
+            <p className="font-medium">Remember: The urge to scroll/game/binge is temporary. You've overcome it before, and you can do it again.</p>
+            <p className="mt-1">Every time you choose real life over the screen, you become stronger. 💪</p>
           </div>
         </div>
       </DialogContent>

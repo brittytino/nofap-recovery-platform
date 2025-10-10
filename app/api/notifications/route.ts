@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession()
     
-    if (!session) {
+    if (!session?.user?.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const user = await db.user.findUnique({
       where: { id: session.user.id },
       include: {
-        achievements: {
+        userAchievements: {
           include: { achievement: true },
           orderBy: { unlockedAt: 'desc' },
           take: 5
@@ -35,14 +35,14 @@ export async function GET(req: NextRequest) {
     const notifications = []
 
     // Achievement notifications
-    user.achievements.forEach((userAchievement) => {
+    user.userAchievements.forEach((userAchievement) => {
       notifications.push({
         id: `achievement-${userAchievement.id}`,
         type: 'achievement',
         title: 'Achievement Unlocked!',
         message: `You earned: ${userAchievement.achievement.name}`,
         createdAt: userAchievement.unlockedAt,
-        read: false
+        isRead: false
       })
     })
 

@@ -12,9 +12,9 @@ export default async function CrisisPage() {
   return (
     <div className="space-y-6">
       <div className="text-center py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Crisis Support</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Urge Management</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          You're not alone. We're here to help you through difficult moments.
+          When the pull to scroll, game, or binge feels overwhelming, use these tools. You're not alone.
         </p>
       </div>
 

@@ -7,52 +7,41 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession()
     
-    if (!session) {
+    if (!session || !session.user?.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await req.json()
+
+    // Create onboarding data JSON
+    const onboardingData = {
+      assessment: {
+        previousAttempts: data.previousAttempts,
+        longestStreak: data.longestStreak?.[0] || 0,
+        mainTriggers: data.mainTriggers || [],
+        supportSystem: data.supportSystem?.[0] || 5,
+        motivation: data.motivation,
+        currentChallenges: data.currentChallenges || []
+      },
+      goals: {
+        primaryGoal: data.primaryGoal,
+        streakGoal: parseInt(data.streakGoal) || 7,
+        healthGoals: data.healthGoals || [],
+        personalGoals: data.personalGoals,
+        timeline: data.timeline,
+        successMeasures: data.successMeasures || []
+      },
+      customMotivation: data.customMotivation
+    }
 
     // Update user with onboarding data
     const updatedUser = await db.user.update({
       where: { id: session.user.id },
       data: {
         relationshipStatus: data.relationshipStatus,
-        onboardingCompleted: true,
+        hasCompletedOnboarding: true,
         streakStartDate: new Date(),
-        recoveryGoals: data.primaryGoal || '',
-        motivationReason: data.motivation || '',
-        
-        // Notification preferences
-        notificationEnabled: data.notificationEnabled ?? true,
-        morningMotivation: data.morningMotivation ?? true,
-        morningTime: data.morningTime || '08:00',
-        midDayReminder: data.midDayReminder ?? true,
-        midDayTime: data.midDayTime || '14:00',
-        eveningReflection: data.eveningReflection ?? true,
-        eveningTime: data.eveningTime || '20:00',
-        urgeAlerts: data.urgeAlerts ?? true,
-        milestoneAlerts: data.milestoneAlerts ?? true,
-        
-        onboardingData: JSON.stringify({
-          assessment: {
-            previousAttempts: data.previousAttempts,
-            longestStreak: data.longestStreak?.[0] || 0,
-            mainTriggers: data.mainTriggers || [],
-            supportSystem: data.supportSystem?.[0] || 5,
-            motivation: data.motivation,
-            currentChallenges: data.currentChallenges || []
-          },
-          goals: {
-            primaryGoal: data.primaryGoal,
-            streakGoal: parseInt(data.streakGoal) || 7,
-            healthGoals: data.healthGoals || [],
-            personalGoals: data.personalGoals,
-            timeline: data.timeline,
-            successMeasures: data.successMeasures || []
-          },
-          customMotivation: data.customMotivation
-        })
+        dailyReminderTime: data.reminderTime || '09:00'
       }
     })
 

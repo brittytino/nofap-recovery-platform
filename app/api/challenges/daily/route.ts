@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession()
     
-    if (!session) {
+    if (!session || !session.user?.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -111,49 +111,36 @@ export async function GET(req: NextRequest) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    // Check if user already has a challenge for today
-    let challenge = await db.challenge.findFirst({
+    // Get a random challenge for the user's tier
+    const challenges = await db.dailyChallenge.findMany({
       where: {
         tier,
-        createdAt: {
-          gte: today,
-          lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
-        }
+        isActive: true
       }
     })
-
-    // If no challenge exists, create one
-    if (!challenge) {
-      const challenges = DAILY_CHALLENGES[tier]
-      const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)]
-      
-      challenge = await db.challenge.create({
-        data: {
-          title: randomChallenge.title,
-          description: randomChallenge.description,
-          category: 'RECOVERY',
-          tier,
-          points: randomChallenge.points,
-          duration: 1,
-        }
-      })
+    
+    if (challenges.length === 0) {
+      return NextResponse.json({ message: 'No challenges available' }, { status: 404 })
     }
 
-    // Get user's progress for this challenge
-    const progress = await db.challengeProgress.findUnique({
+    // Pick a random challenge
+    const challenge = challenges[Math.floor(Math.random() * challenges.length)]
+
+    // Check if user already has this challenge assigned today
+    const userChallenge = await db.userDailyChallenge.findFirst({
       where: {
-        userId_challengeId: {
-          userId: session.user.id,
-          challengeId: challenge.id
+        userId: session.user.id,
+        challengeId: challenge.id,
+        assignedDate: {
+          gte: today
         }
       }
     })
 
     const challengeWithProgress = {
       ...challenge,
-      progress: progress?.progress || 0,
-      isCompleted: progress?.isCompleted || false,
-      target: 1 // Most daily challenges have target of 1
+      isCompleted: userChallenge?.completedAt !== null,
+      completedAt: userChallenge?.completedAt || null
     }
 
     return NextResponse.json({ challenge: challengeWithProgress })

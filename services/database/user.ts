@@ -9,7 +9,7 @@ export async function getUserStats(userId: string) {
         orderBy: { date: 'desc' },
         take: 30
       },
-      achievements: {
+      userAchievements: {
         include: { achievement: true }
       },
       healthMetrics: {
@@ -24,8 +24,8 @@ export async function getUserStats(userId: string) {
   }
 
   // Calculate current streak
-  const currentStreak = user.streakStart 
-    ? differenceInDays(new Date(), user.streakStart) + 1
+  const currentStreak = user.streakStartDate 
+    ? differenceInDays(new Date(), user.streakStartDate) + 1
     : 0
 
   // Calculate averages
@@ -48,7 +48,7 @@ export async function getUserStats(userId: string) {
   }) + 1
 
   // Calculate XP and level
-  const totalXP = user.achievements.length * 50 // Simplified XP calculation
+  const totalXP = user.userAchievements.length * 50 // Simplified XP calculation
   const level = Math.floor(totalXP / 100) + 1
 
   return {
@@ -78,13 +78,13 @@ export async function updateUserStreak(userId: string, reset: boolean = false) {
       data: {
         currentStreak: 0,
         totalResets: user.totalResets + 1,
-        streakStart: new Date(),
+        streakStartDate: new Date(),
       }
     })
   }
 
-  const currentStreak = user.streakStart 
-    ? differenceInDays(new Date(), user.streakStart) + 1
+  const currentStreak = user.streakStartDate 
+    ? differenceInDays(new Date(), user.streakStartDate) + 1
     : 1
 
   return db.user.update({

@@ -11,16 +11,26 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await req.json()
+    
+    // Get current time of day
+    const now = new Date()
+    const hour = now.getHours()
+    let timeOfDay = 'MORNING'
+    if (hour >= 12 && hour < 17) timeOfDay = 'AFTERNOON'
+    else if (hour >= 17 && hour < 21) timeOfDay = 'EVENING'
+    else if (hour >= 21 || hour < 6) timeOfDay = 'NIGHT'
 
     // Create urge log
     const urgeLog = await db.urgeLog.create({
       data: {
         userId: session.user.id,
-        intensity: data.intensity,
+        urgeIntensity: data.intensity,
         triggers: data.triggers || [],
         context: data.context,
-        copingStrategies: data.copingStrategies || [],
-        wasSuccessful: data.wasSuccessful ?? true
+        copingStrategy: data.copingStrategies?.join(', '),
+        wasSuccessful: data.wasSuccessful ?? true,
+        timeOfDay,
+        emotionalState: data.emotionalState || []
       }
     })
 

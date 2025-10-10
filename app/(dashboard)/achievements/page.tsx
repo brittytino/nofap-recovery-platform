@@ -13,7 +13,7 @@ export default async function AchievementsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Achievements</h1>
-          <p className="text-gray-600">Track your progress and unlock badges</p>
+          <p className="text-gray-600">Unlock badges and level up your digital wellness journey</p>
         </div>
       </div>
 

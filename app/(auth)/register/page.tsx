@@ -94,13 +94,13 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-recovery-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">R</span>
+            <span className="text-white text-2xl font-bold">C</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Start Your Journey
+            Start Your Transformation
           </h1>
           <p className="text-gray-600">
-            Join thousands recovering and transforming their lives
+            Join thousands breaking free from digital addiction
           </p>
         </div>
 
@@ -237,11 +237,11 @@ export default function RegisterPage() {
             <div className="p-4 bg-green-50 rounded-lg">
               <h3 className="text-sm font-semibold text-green-900 mb-2">What you'll get:</h3>
               <ul className="text-xs text-green-800 space-y-1">
-                <li>✅ Track your recovery streak</li>
+                <li>✅ Track multiple digital habits</li>
                 <li>✅ Daily motivation and support</li>
-                <li>✅ Anonymous community forum</li>
-                <li>✅ Progress analytics and insights</li>
-                <li>✅ Crisis support resources</li>
+                <li>✅ Anonymous community (no judgment)</li>
+                <li>✅ See how detox improves your life</li>
+                <li>✅ Urge management tools</li>
               </ul>
             </div>
 

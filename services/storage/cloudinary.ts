@@ -11,8 +11,9 @@ export async function uploadImage(
   folder: string = 'recovery-platform'
 ): Promise<string> {
   try {
+    const fileData = file instanceof File ? await fileToDataUrl(file) : file
     const result = await cloudinary.uploader.upload(
-      file instanceof File ? await fileToDataUrl(file) : file,
+      fileData as string,
       {
         folder,
         resource_type: 'auto',

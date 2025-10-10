@@ -13,13 +13,10 @@ export async function POST(
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await req.json()
-    const voteType = data.type // 'UP' or 'DOWN'
-
     // Check if user already voted on this post
-    const existingVote = await db.postVote.findUnique({
+    const existingVote = await db.postUpvote.findUnique({
       where: {
-        userId_postId: {
+        postId_userId: {
           userId: session.user.id,
           postId: params.postId
         }
@@ -27,56 +24,34 @@ export async function POST(
     })
 
     if (existingVote) {
-      if (existingVote.type === voteType) {
-        // Remove vote if clicking same button
-        await db.postVote.delete({
-          where: { id: existingVote.id }
-        })
-
-        // Update post vote count
-        await db.forumPost.update({
-          where: { id: params.postId },
-          data: {
-            upvotes: voteType === 'UP' ? { decrement: 1 } : undefined,
-            downvotes: voteType === 'DOWN' ? { decrement: 1 } : undefined
-          }
-        })
-
-        return NextResponse.json({ success: true, action: 'removed' })
-      } else {
-        // Change vote type
-        await db.postVote.update({
-          where: { id: existingVote.id },
-          data: { type: voteType }
-        })
-
-        // Update post vote counts
-        await db.forumPost.update({
-          where: { id: params.postId },
-          data: {
-            upvotes: voteType === 'UP' ? { increment: 1 } : { decrement: 1 },
-            downvotes: voteType === 'DOWN' ? { increment: 1 } : { decrement: 1 }
-          }
-        })
-
-        return NextResponse.json({ success: true, action: 'changed' })
-      }
-    } else {
-      // Create new vote
-      await db.postVote.create({
-        data: {
-          userId: session.user.id,
-          postId: params.postId,
-          type: voteType
-        }
+      // Remove vote if already exists (toggle behavior)
+      await db.postUpvote.delete({
+        where: { id: existingVote.id }
       })
 
-      // Update post vote count
+      // Decrement post upvote count
       await db.forumPost.update({
         where: { id: params.postId },
         data: {
-          upvotes: voteType === 'UP' ? { increment: 1 } : undefined,
-          downvotes: voteType === 'DOWN' ? { increment: 1 } : undefined
+          upvoteCount: { decrement: 1 }
+        }
+      })
+
+      return NextResponse.json({ success: true, action: 'removed' })
+    } else {
+      // Create new upvote
+      await db.postUpvote.create({
+        data: {
+          userId: session.user.id,
+          postId: params.postId
+        }
+      })
+
+      // Increment post upvote count
+      await db.forumPost.update({
+        where: { id: params.postId },
+        data: {
+          upvoteCount: { increment: 1 }
         }
       })
 

@@ -27,7 +27,8 @@ export function XPBar({ currentXP, xpToNextLevel, level, compact = false }: XPBa
         <div className="flex-1">
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
             <motion.div
-              className={`h-full bg-gradient-to-r ${getGradientColor(level)}`}
+              style={{ height: '100%' }}
+              className={`bg-gradient-to-r ${getGradientColor(level)}`}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: 'easeOut' }}

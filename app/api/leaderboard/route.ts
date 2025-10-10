@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
     // Get users who want to be on leaderboard, ordered by current streak
     const users = await db.user.findMany({
       where: {
-        showOnLeaderboard: true,
         ...(dateFilter ? {
           streakStartDate: {
             gte: dateFilter
@@ -44,16 +43,23 @@ export async function GET(req: NextRequest) {
     })
 
     // Anonymize names partially for privacy
-    const leaderboard = users.map((user, index) => ({
-      rank: index + 1,
-      id: user.id,
-      name: `${user.name.split(' ')[0]} ${user.name.split(' ')[1]?.charAt(0) || ''}.`,
-      image: user.image,
-      currentStreak: user.currentStreak,
-      longestStreak: user.longestStreak,
-      level: user.currentLevel,
-      totalXP: user.totalXP
-    }))
+    const leaderboard = users.map((user, index) => {
+      const nameParts = user.name?.split(' ') || ['Anonymous']
+      const displayName = nameParts.length > 1 
+        ? `${nameParts[0]} ${nameParts[1]?.charAt(0) || ''}.`
+        : nameParts[0]
+      
+      return {
+        rank: index + 1,
+        id: user.id,
+        name: displayName,
+        image: user.image,
+        currentStreak: user.currentStreak,
+        longestStreak: user.longestStreak,
+        level: user.currentLevel,
+        totalXP: user.totalXP
+      }
+    })
 
     return NextResponse.json({ 
       leaderboard,

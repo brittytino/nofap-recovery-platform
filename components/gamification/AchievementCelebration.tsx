@@ -83,7 +83,7 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 180 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className="relative max-w-md w-full"
+            style={{ maxWidth: '28rem', width: '100%', position: 'relative' }}
           >
             {/* Glow effect */}
             <div className={`absolute inset-0 bg-gradient-to-r ${colors.bg} opacity-20 blur-3xl rounded-3xl`} />
@@ -106,7 +106,7 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="mb-6"
+                  style={{ marginBottom: '1.5rem' }}
                 >
                   <Trophy className={`h-12 w-12 mx-auto mb-2 ${colors.text}`} />
                   <h2 className="text-2xl font-bold text-white mb-1">Achievement Unlocked!</h2>
@@ -118,7 +118,7 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
-                  className="mb-6"
+                  style={{ marginBottom: '1.5rem' }}
                 >
                   <div className={`inline-block p-4 rounded-full border-4 ${colors.border} bg-gradient-to-br ${colors.bg}`}>
                     <Award className="h-20 w-20 text-white" />
@@ -130,7 +130,7 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="mb-4"
+                  style={{ marginBottom: '1rem' }}
                 >
                   <h3 className="text-3xl font-bold text-white mb-2">{achievement.name}</h3>
                   <p className="text-gray-300">{achievement.description}</p>
@@ -141,7 +141,7 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="mb-6"
+                  style={{ marginBottom: '1.5rem' }}
                 >
                   <span className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${colors.bg} text-white font-bold text-sm`}>
                     {achievement.tier} TIER
@@ -153,25 +153,30 @@ export function AchievementCelebration({ achievement, onClose }: AchievementCele
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 1 }}
-                  className="flex items-center justify-center space-x-2 text-recovery-500"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--recovery-500)' }}
                 >
                   <Zap className="h-5 w-5" fill="currentColor" />
                   <span className="text-xl font-bold">+{achievement.xpEarned} XP</span>
                 </motion.div>
 
                 {/* Close button */}
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.2 }}
-                  onClick={() => {
-                    setShow(false)
-                    setTimeout(onClose, 500)
-                  }}
-                  className="mt-6 px-6 py-2 bg-recovery-500 hover:bg-recovery-600 text-white rounded-full font-semibold transition-colors"
-                >
-                  Awesome!
-                </motion.button>
+                <div style={{ marginTop: '1.5rem' }}>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    <button
+                      onClick={() => {
+                        setShow(false)
+                        setTimeout(onClose, 500)
+                      }}
+                      className="px-6 py-2 bg-recovery-500 hover:bg-recovery-600 text-white rounded-full font-semibold transition-colors"
+                    >
+                      Awesome!
+                    </button>
+                  </motion.div>
+                </div>
               </div>
             </div>
           </motion.div>
