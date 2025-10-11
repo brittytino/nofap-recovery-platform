@@ -59,12 +59,12 @@ export function PostCard({ post }: PostCardProps) {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'GENERAL': 'bg-blue-100 text-blue-800',
-      'SUCCESS_STORIES': 'bg-green-100 text-green-800',
-      'STRUGGLES': 'bg-red-100 text-red-800',
-      'FITNESS': 'bg-purple-100 text-purple-800',
-      'RELATIONSHIPS': 'bg-pink-100 text-pink-800',
-      'MENTAL_HEALTH': 'bg-indigo-100 text-indigo-800'
+      'GENERAL': 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300',
+      'SUCCESS_STORIES': 'bg-success-100 dark:bg-success-900/20 text-success-800 dark:text-success-300',
+      'STRUGGLES': 'bg-danger-100 dark:bg-danger-900/20 text-danger-800 dark:text-danger-300',
+      'FITNESS': 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300',
+      'RELATIONSHIPS': 'bg-pink-100 dark:bg-pink-900/20 text-pink-800 dark:text-pink-300',
+      'MENTAL_HEALTH': 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-800 dark:text-indigo-300'
     }
     return colors[category as keyof typeof colors] || colors.GENERAL
   }
@@ -80,24 +80,24 @@ export function PostCard({ post }: PostCardProps) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-2">
-            {post.isPinned && <Pin className="h-4 w-4 text-green-600" />}
+            {post.isPinned && <Pin className="h-4 w-4 text-success-600 dark:text-success-400" />}
             <Badge className={getCategoryColor(post.category)} variant="secondary">
               {post.category.replace('_', ' ')}
             </Badge>
           </div>
 
           <Link href={`/forum/post/${post.id}`}>
-            <h3 className="text-lg font-semibold text-gray-900 hover:text-recovery-600 transition-colors cursor-pointer line-clamp-2">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer line-clamp-2">
               {post.title}
             </h3>
           </Link>
 
-          <p className="text-gray-600 mt-2 line-clamp-3">
+          <p className="text-neutral-600 dark:text-neutral-400 mt-2 line-clamp-3">
             {post.content}
           </p>
 
           <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
               <span className="flex items-center space-x-1">
                 <Avatar className="w-4 h-4">
                   <AvatarFallback className="text-xs">

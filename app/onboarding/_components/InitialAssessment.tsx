@@ -26,24 +26,24 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
 
   const questions = [
     {
-      title: 'Previous Attempts',
-      subtitle: 'Tell us about your past experiences with digital wellness (optional)',
+      title: 'Previous NoFap Attempts',
+      subtitle: 'Tell us about your past experiences with NoFap (optional)',
       component: (
         <div className="space-y-4">
-          <Label htmlFor="attempts">Have you tried breaking digital habits before?</Label>
+          <Label htmlFor="attempts">Have you tried NoFap before?</Label>
           <Textarea
             id="attempts"
             value={responses.previousAttempts}
             onChange={(e) => setResponses(prev => ({ ...prev, previousAttempts: e.target.value }))}
-            placeholder="Share about previous attempts to reduce screen time, what worked, what didn't..."
+            placeholder="Share about previous NoFap attempts, what worked, what challenges you faced..."
             rows={4}
           />
         </div>
       )
     },
     {
-      title: 'Longest Streak',
-      subtitle: 'What\'s the longest you\'ve gone before?',
+      title: 'Longest Clean Streak',
+      subtitle: 'What\'s the longest you\'ve stayed clean before?',
       component: (
         <div className="space-y-4">
           <Label>Longest streak: {responses.longestStreak[0]} days</Label>
@@ -56,26 +56,26 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
             className="w-full"
           />
           <div className="flex justify-between text-sm text-gray-500">
-            <span>0 days</span>
-            <span>1 year</span>
+            <span>0 days (first time)</span>
+            <span>1 year+</span>
           </div>
         </div>
       )
     },
     {
       title: 'Main Triggers',
-      subtitle: 'What situations or feelings lead to excessive digital use?',
+      subtitle: 'What situations or feelings trigger your urges most?',
       component: (
         <div className="space-y-3">
           {[
-            'Stress/Anxiety',
             'Boredom',
+            'Stress/Anxiety',
+            'Alone at home',
+            'Late night browsing',
             'Loneliness',
             'Procrastination',
-            'FOMO (Fear of Missing Out)',
-            'Work Pressure',
-            'Sleep Issues',
-            'Social Situations',
+            'Social media scrolling',
+            'Bad mood/depression',
             'Other'
           ].map((trigger) => (
             <label key={trigger} className="flex items-center space-x-2">
@@ -98,7 +98,7 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
     },
     {
       title: 'Support System',
-      subtitle: 'How would you rate your current support system?',
+      subtitle: 'How would you rate your current support system for this journey?',
       component: (
         <div className="space-y-4">
           <Label>Support Level: {responses.supportSystem[0]}/10</Label>
@@ -118,8 +118,8 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
       )
     },
     {
-      title: 'Motivation',
-      subtitle: 'What motivates you to pursue digital wellness?',
+      title: 'Your Why',
+      subtitle: 'What motivates you to start NoFap?',
       component: (
         <div className="space-y-4">
           <Label htmlFor="motivation">Your main motivation</Label>
@@ -127,7 +127,7 @@ export function InitialAssessment({ onNext, onPrevious, data }: InitialAssessmen
             id="motivation"
             value={responses.motivation}
             onChange={(e) => setResponses(prev => ({ ...prev, motivation: e.target.value }))}
-            placeholder="What drives you to make this change? Better focus? Real connections? More time for hobbies?"
+            placeholder="What drives you to make this change? Better focus? Improved confidence? Real relationships? More energy?"
             rows={4}
           />
         </div>

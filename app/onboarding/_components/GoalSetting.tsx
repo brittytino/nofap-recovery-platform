@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Target, Calendar, Trophy } from 'lucide-react'
+import { Flame, Calendar, Trophy } from 'lucide-react'
 
 interface GoalSettingProps {
   onNext: (data: any) => void
@@ -17,49 +17,49 @@ interface GoalSettingProps {
 export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
   const [goals, setGoals] = useState({
     primaryGoal: data.primaryGoal || '',
-    streakGoal: data.streakGoal || '',
+    streakGoal: data.streakGoal || '7',
     healthGoals: data.healthGoals || [],
     personalGoals: data.personalGoals || '',
-    timeline: data.timeline || '',
+    timeline: data.timeline || '90',
     successMeasures: data.successMeasures || []
   })
 
   const healthGoalOptions = [
+    'Improve self-control and discipline',
+    'Boost confidence and energy',
+    'Improve focus and concentration',
+    'Better real-world relationships',
+    'Reclaim time for productive goals',
+    'Break compulsive habits',
+    'Experience the NoFap benefits',
     'Improve sleep quality',
-    'Increase energy levels',
-    'Better mood stability',
-    'Enhanced focus and concentration',
-    'Reduced anxiety and stress',
-    'Build real-world connections',
-    'Better relationships',
-    'More time for hobbies',
-    'Physical fitness',
-    'Mental clarity',
-    'Reduce FOMO',
-    'Break dopamine addiction'
+    'Reduce social anxiety',
+    'Build mental resilience',
+    'Increase motivation',
+    'Better emotional regulation'
   ]
 
   const timelineOptions = [
-    { value: '30', label: '30 days (Foundation building)' },
-    { value: '90', label: '90 days (Habit formation)' },
-    { value: '180', label: '6 months (Life transformation)' },
-    { value: '365', label: '1 year (Complete lifestyle change)' },
-    { value: 'ongoing', label: 'Ongoing journey' }
+    { value: '7', label: '7 days (Beginner - First week)' },
+    { value: '30', label: '30 days (Intermediate - Break the cycle)' },
+    { value: '90', label: '90 days (Reboot - Recommended)' },
+    { value: '365', label: '365 days (Ultimate Challenge)' },
+    { value: 'ongoing', label: 'Lifelong journey' }
   ]
 
   const successMeasureOptions = [
-    'Increased productivity',
-    'Better sleep patterns',
-    'Improved relationships',
     'Enhanced self-control',
+    'Increased confidence',
+    'Better energy levels',
+    'Improved focus and concentration',
+    'Better real-world relationships',
+    'Reduced social anxiety',
+    'More productive use of time',
+    'Better sleep quality',
+    'Increased motivation',
+    'Improved mood stability',
     'Greater life satisfaction',
-    'Reduced screen time',
-    'More real-world activities',
-    'Better physical health',
-    'Mental clarity',
-    'Less FOMO and anxiety',
-    'Improved focus',
-    'More present in conversations'
+    'Stronger willpower'
   ]
 
   const toggleArrayItem = (array: string[], item: string, setter: (items: string[]) => void) => {
@@ -76,10 +76,10 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
   return (
     <Card className="p-8">
       <div className="text-center mb-8">
-        <Target className="h-12 w-12 text-recovery-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Digital Wellness Goals</h2>
+        <Flame className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your NoFap Goals</h2>
         <p className="text-gray-600">
-          Clear goals help you build intentional habits and reclaim your attention
+          Clear goals help you build self-control and transform your life
         </p>
       </div>
 
@@ -87,13 +87,13 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
         {/* Primary Goal */}
         <div>
           <Label htmlFor="primaryGoal" className="text-base font-semibold text-gray-900 mb-3 block">
-            What's your primary digital wellness goal?
+            What's your primary NoFap goal?
           </Label>
           <Textarea
             id="primaryGoal"
             value={goals.primaryGoal}
             onChange={(e) => setGoals(prev => ({ ...prev, primaryGoal: e.target.value }))}
-            placeholder="e.g., I want to stop mindless social media scrolling and have more time for real hobbies..."
+            placeholder="e.g., I want to build self-control, improve my confidence, and have better real-world relationships..."
             rows={3}
             className="w-full"
           />
@@ -221,13 +221,13 @@ export function GoalSetting({ onNext, onPrevious, data }: GoalSettingProps) {
         </Button>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-        <h4 className="font-medium text-blue-900 mb-2">💡 Goal Setting Tips</h4>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Start with small, achievable goals</li>
-          <li>• Be specific about what you want to accomplish</li>
-          <li>• Focus on positive outcomes, not just avoiding negatives</li>
-          <li>• Your goals can evolve as you progress</li>
+      <div className="mt-6 p-4 bg-orange-50 rounded-lg">
+        <h4 className="font-medium text-orange-900 mb-2">🔥 NoFap Goal Setting Tips</h4>
+        <ul className="text-sm text-orange-800 space-y-1">
+          <li>• Start with 7 days if you're new to NoFap</li>
+          <li>• 90 days is the classic "reboot" goal</li>
+          <li>• Focus on building discipline, not just avoiding urges</li>
+          <li>• Your goals can evolve as you build stronger self-control</li>
         </ul>
       </div>
     </Card>

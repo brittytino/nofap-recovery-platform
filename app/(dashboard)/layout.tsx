@@ -17,16 +17,23 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors">
+      {/* Desktop Sidebar */}
+      <Sidebar className="hidden lg:block" />
+      
+      {/* Header - responsive with sidebar offset */}
       <Header />
-      <div className="flex">
-        <Sidebar className="hidden lg:block" />
-        <main className="flex-1 lg:ml-64 min-h-screen">
-          <div className="p-4 lg:p-6">
+      
+      {/* Main Content Area */}
+      <main className="lg:ml-70 min-h-screen transition-all duration-300 pb-20 lg:pb-0">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-7xl mx-auto">
+          <div className="animate-fade-in space-y-6">
             {children}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
+      
+      {/* Mobile Bottom Navigation */}
       <MobileMenu />
     </div>
   )

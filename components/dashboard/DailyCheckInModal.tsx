@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Slider } from '@/components/ui/slider'
-import { Sun, Battery, Smile, Moon, AlertTriangle } from 'lucide-react'
+import { Sun, Battery, Smile, Moon, AlertTriangle, Target } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface DailyCheckInModalProps {
@@ -18,134 +18,101 @@ interface DailyCheckInModalProps {
 export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [checkInData, setCheckInData] = useState({
-    moodRating: [7],
-    energyLevel: [7],
-    sleepQuality: [7],
-    confidenceLevel: [7],
+    stayedClean: true, // PRIMARY FIELD - Did you stay clean today?
     urgeIntensity: [0],
+    energyLevel: [7],
+    confidenceLevel: [7],
     notes: '',
     triggers: [] as string[],
-    activitiesCompleted: [] as string[]
+    activitiesCompleted: [] as string[],
+    copingStrategiesUsed: [] as string[]
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const triggerOptions = [
-    'Stress/Anxiety',
     'Boredom',
+    'Stress/Anxiety', 
+    'Alone at home',
+    'Late night browsing',
+    'Saw triggering content',
     'Loneliness',
-    'Social Media',
-    'Work Pressure',
-    'Relationship Issues',
-    'Sleep Deprivation',
-    'None Today'
+    'Procrastination',
+    'Social media scrolling',
+    'None today'
   ]
 
   const activityOptions = [
-    'Exercise',
+    'Exercise/Workout',
+    'Cold shower',
     'Meditation',
-    'Healthy Meal',
-    'Social Interaction',
-    'Productive Work',
-    'Learning',
-    'Creative Activity',
-    'Self-Care'
+    'Social interaction',
+    'Productive work',
+    'Learning/Reading',
+    'Creative activity',
+    'Outdoor activity'
+  ]
+
+  const copingStrategiesOptions = [
+    'Cold shower',
+    'Push-ups/Exercise',
+    'Went outside',
+    'Called a friend',
+    'Deep breathing',
+    'Meditation',
+    'Distraction activity',
+    'Reviewed goals'
   ]
 
   const steps = [
     {
-      title: 'How are you feeling?',
-      subtitle: 'Rate your overall mood today',
-      icon: Smile,
-      color: 'text-yellow-500',
-      component: (
-        <div className="space-y-6">
-          <div>
-            <Label className="text-lg mb-4 block">Mood Rating: {checkInData.moodRating[0]}/10</Label>
-            <Slider
-              value={checkInData.moodRating}
-              onValueChange={(value) => setCheckInData(prev => ({ ...prev, moodRating: value }))}
-              max={10}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>😔 Low</span>
-              <span>😊 Great</span>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: 'Energy Level',
-      subtitle: 'How energetic do you feel?',
-      icon: Battery,
+      title: 'Did you stay clean today?',
+      subtitle: 'The most important question - be honest with yourself',
+      icon: Target,
       color: 'text-green-500',
       component: (
         <div className="space-y-6">
-          <div>
-            <Label className="text-lg mb-4 block">Energy Level: {checkInData.energyLevel[0]}/10</Label>
-            <Slider
-              value={checkInData.energyLevel}
-              onValueChange={(value) => setCheckInData(prev => ({ ...prev, energyLevel: value }))}
-              max={10}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>🔋 Drained</span>
-              <span>⚡ Energized</span>
+          <div className="text-center">
+            <Label className="text-xl mb-6 block font-semibold">Did you stay clean today?</Label>
+            <div className="flex justify-center space-x-8">
+              <button
+                onClick={() => setCheckInData(prev => ({ ...prev, stayedClean: true }))}
+                className={`px-8 py-4 rounded-lg text-lg font-semibold transition-all ${
+                  checkInData.stayedClean 
+                    ? 'bg-green-500 text-white shadow-lg scale-105' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ✅ YES - I stayed clean
+              </button>
+              <button
+                onClick={() => setCheckInData(prev => ({ ...prev, stayedClean: false }))}
+                className={`px-8 py-4 rounded-lg text-lg font-semibold transition-all ${
+                  !checkInData.stayedClean 
+                    ? 'bg-red-500 text-white shadow-lg scale-105' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ❌ NO - I relapsed
+              </button>
             </div>
-          </div>
-
-          <div>
-            <Label className="text-lg mb-4 block">Confidence Level: {checkInData.confidenceLevel[0]}/10</Label>
-            <Slider
-              value={checkInData.confidenceLevel}
-              onValueChange={(value) => setCheckInData(prev => ({ ...prev, confidenceLevel: value }))}
-              max={10}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>😟 Low</span>
-              <span>💪 High</span>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: 'Sleep Quality',
-      subtitle: 'How well did you sleep last night?',
-      icon: Moon,
-      color: 'text-indigo-500',
-      component: (
-        <div className="space-y-6">
-          <div>
-            <Label className="text-lg mb-4 block">Sleep Quality: {checkInData.sleepQuality[0]}/10</Label>
-            <Slider
-              value={checkInData.sleepQuality}
-              onValueChange={(value) => setCheckInData(prev => ({ ...prev, sleepQuality: value }))}
-              max={10}
-              min={1}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>😴 Poor</span>
-              <span>🌙 Excellent</span>
-            </div>
+            {checkInData.stayedClean ? (
+              <div className="mt-4 p-4 bg-green-50 rounded-lg">
+                <p className="text-green-700 font-medium">🎉 Excellent! Another day of self-control!</p>
+                <p className="text-green-600 text-sm mt-1">You're building incredible discipline. Keep going, warrior!</p>
+              </div>
+            ) : (
+              <div className="mt-4 p-4 bg-orange-50 rounded-lg">
+                <p className="text-orange-700 font-medium">💪 It's okay - relapses happen</p>
+                <p className="text-orange-600 text-sm mt-1">What matters is getting back up. Your streak resets, but your progress doesn't.</p>
+              </div>
+            )}
           </div>
         </div>
       )
     },
     {
-      title: 'Urge Check',
-      subtitle: 'Any urges or cravings today?',
+      title: 'Urge Intensity',
+      subtitle: 'How strong were your urges today?',
       icon: AlertTriangle,
       color: 'text-red-500',
       component: (
@@ -161,14 +128,14 @@ export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInM
               className="w-full"
             />
             <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>✅ None</span>
-              <span>⚠️ Strong</span>
+              <span>😌 No urges</span>
+              <span>🔥 Very strong</span>
             </div>
           </div>
 
           {checkInData.urgeIntensity[0] > 0 && (
             <div>
-              <Label className="text-base mb-2 block">What triggered it?</Label>
+              <Label className="text-base mb-2 block">What triggered these urges?</Label>
               <div className="grid grid-cols-2 gap-2">
                 {triggerOptions.map((trigger) => (
                   <label key={trigger} className="flex items-center space-x-2 text-sm">
@@ -189,18 +156,83 @@ export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInM
               </div>
             </div>
           )}
+
+          {checkInData.urgeIntensity[0] > 0 && (
+            <div>
+              <Label className="text-base mb-2 block">How did you cope with the urges?</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {copingStrategiesOptions.map((strategy) => (
+                  <label key={strategy} className="flex items-center space-x-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={checkInData.copingStrategiesUsed.includes(strategy)}
+                      onChange={(e) => {
+                        const newStrategies = e.target.checked
+                          ? [...checkInData.copingStrategiesUsed, strategy]
+                          : checkInData.copingStrategiesUsed.filter(s => s !== strategy)
+                        setCheckInData(prev => ({ ...prev, copingStrategiesUsed: newStrategies }))
+                      }}
+                      className="rounded"
+                    />
+                    <span>{strategy}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )
     },
     {
-      title: 'Daily Activities',
-      subtitle: 'What positive activities did you complete?',
+      title: 'Energy & Confidence',
+      subtitle: 'How are you feeling today?',
+      icon: Battery,
+      color: 'text-blue-500',
+      component: (
+        <div className="space-y-6">
+          <div>
+            <Label className="text-lg mb-4 block">Energy Level: {checkInData.energyLevel[0]}/10</Label>
+            <Slider
+              value={checkInData.energyLevel}
+              onValueChange={(value) => setCheckInData(prev => ({ ...prev, energyLevel: value }))}
+              max={10}
+              min={1}
+              step={1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-sm text-neutral-500 dark:text-neutral-400 mt-2">
+              <span>🔋 Drained</span>
+              <span>⚡ Energized</span>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-lg mb-4 block">Confidence Level: {checkInData.confidenceLevel[0]}/10</Label>
+            <Slider
+              value={checkInData.confidenceLevel}
+              onValueChange={(value) => setCheckInData(prev => ({ ...prev, confidenceLevel: value }))}
+              max={10}
+              min={1}
+              step={1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-sm text-neutral-500 dark:text-neutral-400 mt-2">
+              <span>😟 Low confidence</span>
+              <span>💪 High confidence</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Positive Activities',
+      subtitle: 'What did you do to build discipline today?',
       icon: Sun,
       color: 'text-orange-500',
       component: (
         <div className="space-y-6">
           <div>
-            <Label className="text-base mb-2 block">Select all that apply:</Label>
+            <Label className="text-base mb-2 block">Activities completed today:</Label>
             <div className="grid grid-cols-2 gap-2">
               {activityOptions.map((activity) => (
                 <label key={activity} className="flex items-center space-x-2 text-sm">
@@ -222,12 +254,12 @@ export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInM
           </div>
 
           <div>
-            <Label htmlFor="notes" className="text-base mb-2 block">Additional Notes (Optional)</Label>
+            <Label htmlFor="notes" className="text-base mb-2 block">Reflection & Notes (Optional)</Label>
             <Textarea
               id="notes"
               value={checkInData.notes}
               onChange={(e) => setCheckInData(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="How are you feeling? Any wins or challenges today?"
+              placeholder="How are you feeling? Any wins, challenges, or insights from today?"
               rows={4}
             />
           </div>
@@ -260,19 +292,20 @@ export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInM
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          moodRating: checkInData.moodRating[0],
+          stayedClean: checkInData.stayedClean,
           energyLevel: checkInData.energyLevel[0],
           confidenceLevel: checkInData.confidenceLevel[0],
-          sleepQuality: checkInData.sleepQuality[0],
           urgeIntensity: checkInData.urgeIntensity[0],
           notes: checkInData.notes,
           triggers: checkInData.triggers,
-          activitiesCompleted: checkInData.activitiesCompleted
+          activitiesCompleted: checkInData.activitiesCompleted,
+          copingStrategiesUsed: checkInData.copingStrategiesUsed
         })
       })
 
       if (response.ok) {
-        toast.success('Daily check-in completed! +10 XP')
+        const xpReward = checkInData.stayedClean ? 20 : 10 // More XP for staying clean
+        toast.success(`Daily check-in completed! +${xpReward} XP`)
         onComplete?.()
         onClose()
       } else {
@@ -341,7 +374,7 @@ export function DailyCheckInModal({ isOpen, onClose, onComplete }: DailyCheckInM
         </div>
 
         <p className="text-xs text-center text-gray-500 mt-4">
-          Daily check-ins help track your progress and identify patterns
+          Daily check-ins help you stay accountable and build self-control
         </p>
       </DialogContent>
     </Dialog>

@@ -53,7 +53,7 @@ export function HealthTracker({ userId }: HealthTrackerProps) {
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Daily Health Check-in</h3>
+      <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">Daily Health Check-in</h3>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -69,7 +69,7 @@ export function HealthTracker({ userId }: HealthTrackerProps) {
             step={1}
             className="w-full"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mt-1">
             <span>Very Low</span>
             <span>Excellent</span>
           </div>
@@ -88,7 +88,7 @@ export function HealthTracker({ userId }: HealthTrackerProps) {
             step={1}
             className="w-full"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mt-1">
             <span>Exhausted</span>
             <span>Energized</span>
           </div>

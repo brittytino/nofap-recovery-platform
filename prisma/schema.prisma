@@ -65,6 +65,7 @@ model User {
   dailyChallenges       UserDailyChallenge[]
   notifications         Notification[]
   streakShares          StreakShare[]
+  relapseLogs           RelapseLog[]
   
   @@index([email])
   @@index([currentStreak])
@@ -122,8 +123,10 @@ model DailyLog {
   userId              String   @map("user_id")
   date                DateTime @default(now())
   
+  // NoFap Primary Tracking
+  stayedClean         Boolean  @default(true) // PRIMARY FIELD - Did you stay clean today?
+  
   // Daily Tracking
-  moodRating          Int?     @default(5) // 1-10 scale
   energyLevel         Int?     @default(5) // 1-10 scale
   confidenceLevel     Int?     @default(5) // 1-10 scale
   urgeIntensity       Int?     @default(0) // 0-10 scale
@@ -138,6 +141,7 @@ model DailyLog {
   notes               String?  @db.Text
   triggers            String[] @default([])
   copingStrategies    String[] @default([])
+  copingStrategiesUsed String[] @default([]) // New field for coping strategies used
   
   // Metadata
   checkInTime         DateTime @default(now())
@@ -148,6 +152,7 @@ model DailyLog {
   @@unique([userId, date])
   @@index([userId])
   @@index([date])
+  @@index([stayedClean]) // Index for streak calculations
   @@map("daily_logs")
 }
 
@@ -163,6 +168,24 @@ model StreakShare {
   
   @@index([userId])
   @@map("streak_shares")
+}
+
+model RelapseLog {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  relapseDate       DateTime @default(now())
+  streakLost        Int      // Number of days lost
+  triggerIdentified String?  @db.Text
+  emotionalState    String?  @db.Text
+  lessonsLearned    String?  @db.Text
+  bounceBackPlan    String?  @db.Text
+  createdAt         DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([relapseDate])
+  @@map("relapse_logs")
 }
 
 // ============================================

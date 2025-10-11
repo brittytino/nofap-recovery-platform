@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white dark:bg-neutral-950 transition-colors">
       {/* Left side - Auth forms */}
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md">
@@ -15,7 +15,7 @@ export default function AuthLayout({
       </div>
       
       {/* Right side - Motivational content */}
-      <div className="hidden lg:flex bg-gradient-to-br from-recovery-500 to-recovery-700 items-center justify-center p-8">
+      <div className="hidden lg:flex bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-600 dark:to-primary-800 items-center justify-center p-8">
         <div className="text-center text-white max-w-lg">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-4">

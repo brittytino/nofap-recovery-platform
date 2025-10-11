@@ -25,27 +25,27 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
   const [breathingActive, setBreathingActive] = useState(false)
 
   const triggerOptions = [
-    'Stress/Anxiety',
     'Boredom',
+    'Stress/Anxiety',
+    'Alone at home',
+    'Late night browsing',
+    'Saw triggering content',
     'Loneliness',
-    'FOMO',
     'Procrastination',
-    'Work Pressure',
-    'Relationship Issues',
-    'Sleep Deprivation',
-    'Saw Social Media',
+    'Social media scrolling',
+    'Bad mood',
     'Other'
   ]
 
   const copingStrategies = [
-    { id: 'exercise', label: '🏃 Do 20 push-ups or jumping jacks', description: 'Physical activity releases endorphins' },
-    { id: 'cold', label: '🚿 Take a cold shower', description: 'Resets your nervous system' },
-    { id: 'walk', label: '🚶 Go for a 10-minute walk', description: 'Change your environment' },
-    { id: 'call', label: '📞 Call a friend or accountability partner', description: 'Social support is powerful' },
-    { id: 'meditation', label: '🧘 Practice mindfulness meditation', description: 'Observe urges without acting' },
+    { id: 'cold_shower', label: '🚿 Take a cold shower NOW', description: 'Instant reset - most effective strategy' },
+    { id: 'pushups', label: '💪 Do 20 push-ups immediately', description: 'Channel energy into strength' },
+    { id: 'outside', label: '🚶 Go outside for a walk', description: 'Change environment completely' },
+    { id: 'call_friend', label: '📞 Call a friend or accountability partner', description: 'Brotherhood support is powerful' },
     { id: 'breathing', label: '🌬️ Box breathing exercise', description: 'Calm your nervous system' },
-    { id: 'journaling', label: '📝 Write in your journal', description: 'Process your emotions' },
-    { id: 'music', label: '🎵 Listen to uplifting music', description: 'Shift your mood' }
+    { id: 'meditation', label: '🧘 Meditate for 10 minutes', description: 'Observe urges without acting' },
+    { id: 'review_goals', label: '🎯 Review your "why" and goals', description: 'Remember what you\'re fighting for' },
+    { id: 'distraction', label: '🎮 Engage in healthy distraction', description: 'Watch motivational videos, read' }
   ]
 
   const emergencyContacts = [
@@ -99,32 +99,32 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
           </DialogHeader>
 
           <div className="space-y-6">
-            <div className="bg-blue-50 p-6 rounded-lg text-center">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg text-center">
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-6">Follow the breathing pattern:</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">Follow the breathing pattern:</p>
                 <div className="space-y-4">
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                    <p className="text-gray-700">Breathe in for 4 seconds</p>
+                    <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                    <p className="text-neutral-700 dark:text-neutral-300">Breathe in for 4 seconds</p>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                    <p className="text-gray-700">Hold for 4 seconds</p>
+                    <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                    <p className="text-neutral-700 dark:text-neutral-300">Hold for 4 seconds</p>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                    <p className="text-gray-700">Breathe out for 4 seconds</p>
+                    <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                    <p className="text-neutral-700 dark:text-neutral-300">Breathe out for 4 seconds</p>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
-                    <p className="text-gray-700">Hold for 4 seconds</p>
+                    <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">4</div>
+                    <p className="text-neutral-700 dark:text-neutral-300">Hold for 4 seconds</p>
                   </div>
                 </div>
               </div>
               
               <div className="mt-6">
-                <div className="w-32 h-32 border-4 border-blue-500 rounded-lg mx-auto animate-pulse" />
-                <p className="text-sm text-gray-600 mt-4">Repeat this cycle 4-5 times</p>
+                <div className="w-32 h-32 border-4 border-blue-500 dark:border-blue-400 rounded-lg mx-auto animate-pulse" />
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-4">Repeat this cycle 4-5 times</p>
               </div>
             </div>
 
@@ -249,9 +249,9 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
         <DialogHeader>
           <div className="flex items-center space-x-2 mb-2">
             <AlertCircle className="h-6 w-6 text-red-500" />
-            <DialogTitle className="text-2xl">Crisis Support</DialogTitle>
+            <DialogTitle className="text-2xl">🚨 URGE EMERGENCY</DialogTitle>
           </div>
-          <p className="text-gray-600">You're experiencing an urge to go back to old digital habits. That's normal. Let's work through this together.</p>
+          <p className="text-gray-600">You're having strong urges right now. That's normal - every warrior faces this battle. Let's fight this together.</p>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -259,23 +259,39 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
           <div className="bg-red-50 border-2 border-red-200 p-4 rounded-lg">
             <h3 className="font-semibold text-red-900 mb-3 flex items-center">
               <Heart className="h-5 w-5 mr-2" />
-              Quick Actions (Do This Now)
+              IMMEDIATE ACTION NEEDED
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <Button 
-                onClick={handleBreathingExercise}
-                className="bg-blue-500 hover:bg-blue-600 w-full justify-start"
-              >
-                <Wind className="h-4 w-4 mr-2" />
-                Start Breathing Exercise
-              </Button>
-              <Button 
-                onClick={() => toast.success('Taking a 5-minute break!')}
-                className="bg-green-500 hover:bg-green-600 w-full justify-start"
-              >
-                <Brain className="h-4 w-4 mr-2" />
-                5-Minute Distraction Timer
-              </Button>
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded border-l-4 border-red-500">
+                <p className="text-sm font-medium text-red-700 mb-2">⏰ This urge will pass in 15 minutes. Don't think, just act:</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Button 
+                  onClick={() => toast.success('🚿 COLD SHOWER NOW! This is your best weapon!')}
+                  className="bg-blue-500 hover:bg-blue-600 w-full justify-start text-left"
+                >
+                  🚿 COLD SHOWER NOW
+                </Button>
+                <Button 
+                  onClick={() => toast.success('💪 20 push-ups! Channel that energy!')}
+                  className="bg-green-500 hover:bg-green-600 w-full justify-start"
+                >
+                  💪 20 PUSH-UPS NOW
+                </Button>
+                <Button 
+                  onClick={handleBreathingExercise}
+                  className="bg-purple-500 hover:bg-purple-600 w-full justify-start"
+                >
+                  <Wind className="h-4 w-4 mr-2" />
+                  Box Breathing (4-4-4-4)
+                </Button>
+                <Button 
+                  onClick={() => toast.success('🚶 Going outside! Change your environment!')}
+                  className="bg-orange-500 hover:bg-orange-600 w-full justify-start"
+                >
+                  🚶 GO OUTSIDE NOW
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -335,9 +351,11 @@ export function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
             </Button>
           </div>
 
-          <div className="text-center text-sm text-gray-600">
-            <p className="font-medium">Remember: The urge to scroll/game/binge is temporary. You've overcome it before, and you can do it again.</p>
-            <p className="mt-1">Every time you choose real life over the screen, you become stronger. 💪</p>
+          <div className="text-center text-sm text-gray-600 bg-green-50 p-4 rounded-lg">
+            <p className="font-bold text-green-800 text-lg mb-2">🔥 WARRIOR REMINDER 🔥</p>
+            <p className="font-medium text-green-700">This urge is temporary. Your progress is permanent.</p>
+            <p className="mt-1 text-green-600">You've resisted before. You're stronger than your urges.</p>
+            <p className="mt-1 text-green-600 font-medium">Walk away from the screen. Walk toward your goals. 💪</p>
           </div>
         </div>
       </DialogContent>

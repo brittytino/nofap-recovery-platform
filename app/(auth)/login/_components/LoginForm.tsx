@@ -67,7 +67,7 @@ export function LoginForm() {
           disabled={isLoading}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-danger-500 dark:text-danger-400 text-sm mt-1">{errors.email.message}</p>
         )}
       </div>
       
@@ -82,12 +82,12 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
         >
           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
         {errors.password && (
-          <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+          <p className="text-danger-500 dark:text-danger-400 text-sm mt-1">{errors.password.message}</p>
         )}
       </div>
 
@@ -108,10 +108,10 @@ export function LoginForm() {
       
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
+          <div className="w-full border-t border-neutral-300 dark:border-neutral-700" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
+          <span className="bg-white dark:bg-neutral-900 px-2 text-neutral-500 dark:text-neutral-400">Or continue with</span>
         </div>
       </div>
       
